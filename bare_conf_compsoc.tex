@@ -1,0 +1,903 @@
+
+%% bare_conf_compsoc.tex
+%% V1.4b
+%% 2015/08/26
+%% by Michael Shell
+%% See:
+%% http://www.michaelshell.org/
+%% for current contact information.
+%%
+%% This is a skeleton file demonstrating the use of IEEEtran.cls
+%% (requires IEEEtran.cls version 1.8b or later) with an IEEE Computer
+%% Society conference paper.
+%%
+%% Support sites:
+%% http://www.michaelshell.org/tex/ieeetran/
+%% http://www.ctan.org/pkg/ieeetran
+%% and
+%% http://www.ieee.org/
+
+%%*************************************************************************
+%% Legal Notice:
+%% This code is offered as-is without any warranty either expressed or
+%% implied; without even the implied warranty of MERCHANTABILITY or
+%% FITNESS FOR A PARTICULAR PURPOSE! 
+%% User assumes all risk.
+%% In no event shall the IEEE or any contributor to this code be liable for
+%% any damages or losses, including, but not limited to, incidental,
+%% consequential, or any other damages, resulting from the use or misuse
+%% of any information contained here.
+%%
+%% All comments are the opinions of their respective authors and are not
+%% necessarily endorsed by the IEEE.
+%%
+%% This work is distributed under the LaTeX Project Public License (LPPL)
+%% ( http://www.latex-project.org/ ) version 1.3, and may be freely used,
+%% distributed and modified. A copy of the LPPL, version 1.3, is included
+%% in the base LaTeX documentation of all distributions of LaTeX released
+%% 2003/12/01 or later.
+%% Retain all contribution notices and credits.
+%% ** Modified files should be clearly indicated as such, including  **
+%% ** renaming them and changing author support contact information. **
+%%*************************************************************************
+
+
+% *** Authors should verify (and, if needed, correct) their LaTeX system  ***
+% *** with the testflow diagnostic prior to trusting their LaTeX platform ***
+% *** with production work. The IEEE's font choices and paper sizes can   ***
+% *** trigger bugs that do not appear when using other class files.       ***                          ***
+% The testflow support page is at:
+% http://www.michaelshell.org/tex/testflow/
+
+
+
+\documentclass[conference,compsoc]{IEEEtran}
+% Some/most Computer Society conferences require the compsoc mode option,
+% but others may want the standard conference format.
+%
+% If IEEEtran.cls has not been installed into the LaTeX system files,
+% manually specify the path to it like:
+% \documentclass[conference,compsoc]{../sty/IEEEtran}
+
+
+
+
+
+% Some very useful LaTeX packages include:
+% (uncomment the ones you want to load)
+
+
+% *** MISC UTILITY PACKAGES ***
+%
+%\usepackage{ifpdf}
+% Heiko Oberdiek's ifpdf.sty is very useful if you need conditional
+% compilation based on whether the output is pdf or dvi.
+% usage:
+% \ifpdf
+%   % pdf code
+% \else
+%   % dvi code
+% \fi
+% The latest version of ifpdf.sty can be obtained from:
+% http://www.ctan.org/pkg/ifpdf
+% Also, note that IEEEtran.cls V1.7 and later provides a builtin
+% \ifCLASSINFOpdf conditional that works the same way.
+% When switching from latex to pdflatex and vice-versa, the compiler may
+% have to be run twice to clear warning/error messages.
+
+
+
+
+
+
+% *** CITATION PACKAGES ***
+%
+\ifCLASSOPTIONcompsoc
+  % IEEE Computer Society needs nocompress option
+  % requires cite.sty v4.0 or later (November 2003)
+  \usepackage[nocompress]{cite}
+\else
+  % normal IEEE
+  \usepackage{cite}
+\fi
+
+\usepackage{caption}
+\usepackage{graphicx, subfigure}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{multirow}
+\usepackage{amsmath,amssymb}
+\renewcommand{\algorithmicrequire}{ \textbf{Input:}} %Use Input in the format of Algorithm
+\renewcommand{\algorithmicensure}{ \textbf{Output:}} %UseOutput in the format of Algorithm
+
+
+\renewcommand\thesection{\arabic{section}} 
+\renewcommand\thesubsection{\thesection.\Alph{subsection}} 
+% cite.sty was written by Donald Arseneau
+% V1.6 and later of IEEEtran pre-defines the format of the cite.sty package
+% \cite{} output to follow that of the IEEE. Loading the cite package will
+% result in citation numbers being automatically sorted and properly
+% "compressed/ranged". e.g., [1], [9], [2], [7], [5], [6] without using
+% cite.sty will become [1], [2], [5]--[7], [9] using cite.sty. cite.sty's
+% \cite will automatically add leading space, if needed. Use cite.sty's
+% noadjust option (cite.sty V3.8 and later) if you want to turn this off
+% such as if a citation ever needs to be enclosed in parenthesis.
+% cite.sty is already installed on most LaTeX systems. Be sure and use
+% version 5.0 (2009-03-20) and later if using hyperref.sty.
+% The latest version can be obtained at:
+% http://www.ctan.org/pkg/cite
+% The documentation is contained in the cite.sty file itself.
+%
+% Note that some packages require special options to format as the Computer
+% Society requires. In particular, Computer Society  papers do not use
+% compressed citation ranges as is done in typical IEEE papers
+% (e.g., [1]-[4]). Instead, they list every citation separately in order
+% (e.g., [1], [2], [3], [4]). To get the latter we need to load the cite
+% package with the nocompress option which is supported by cite.sty v4.0
+% and later.
+
+
+
+
+
+% *** GRAPHICS RELATED PACKAGES ***
+%
+\ifCLASSINFOpdf
+  % \usepackage[pdftex]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../pdf/}{../jpeg/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+\else
+  % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
+  % will default to the driver specified in the system graphics.cfg if no
+  % driver is specified.
+  % \usepackage[dvips]{graphicx}
+  % declare the path(s) where your graphic files are
+  % \graphicspath{{../eps/}}
+  % and their extensions so you won't have to specify these with
+  % every instance of \includegraphics
+  % \DeclareGraphicsExtensions{.eps}
+\fi
+% graphicx was written by David Carlisle and Sebastian Rahtz. It is
+% required if you want graphics, photos, etc. graphicx.sty is already
+% installed on most LaTeX systems. The latest version and documentation
+% can be obtained at: 
+% http://www.ctan.org/pkg/graphicx
+% Another good source of documentation is "Using Imported Graphics in
+% LaTeX2e" by Keith Reckdahl which can be found at:
+% http://www.ctan.org/pkg/epslatex
+%
+% latex, and pdflatex in dvi mode, support graphics in encapsulated
+% postscript (.eps) format. pdflatex in pdf mode supports graphics
+% in .pdf, .jpeg, .png and .mps (metapost) formats. Users should ensure
+% that all non-photo figures use a vector format (.eps, .pdf, .mps) and
+% not a bitmapped formats (.jpeg, .png). The IEEE frowns on bitmapped formats
+% which can result in "jaggedy"/blurry rendering of lines and letters as
+% well as large increases in file sizes.
+%
+% You can find documentation about the pdfTeX application at:
+% http://www.tug.org/applications/pdftex
+
+
+
+
+
+% *** MATH PACKAGES ***
+%
+%\usepackage{amsmath}
+% A popular package from the American Mathematical Society that provides
+% many useful and powerful commands for dealing with mathematics.
+%
+% Note that the amsmath package sets \interdisplaylinepenalty to 10000
+% thus preventing page breaks from occurring within multiline equations. Use:
+%\interdisplaylinepenalty=2500
+% after loading amsmath to restore such page breaks as IEEEtran.cls normally
+% does. amsmath.sty is already installed on most LaTeX systems. The latest
+% version and documentation can be obtained at:
+% http://www.ctan.org/pkg/amsmath
+
+
+
+
+
+% *** SPECIALIZED LIST PACKAGES ***
+%
+%\usepackage{algorithmic}
+% algorithmic.sty was written by Peter Williams and Rogerio Brito.
+% This package provides an algorithmic environment fo describing algorithms.
+% You can use the algorithmic environment in-text or within a figure
+% environment to provide for a floating algorithm. Do NOT use the algorithm
+% floating environment provided by algorithm.sty (by the same authors) or
+% algorithm2e.sty (by Christophe Fiorio) as the IEEE does not use dedicated
+% algorithm float types and packages that provide these will not provide
+% correct IEEE style captions. The latest version and documentation of
+% algorithmic.sty can be obtained at:
+% http://www.ctan.org/pkg/algorithms
+% Also of interest may be the (relatively newer and more customizable)
+% algorithmicx.sty package by Szasz Janos:
+% http://www.ctan.org/pkg/algorithmicx
+
+
+
+
+% *** ALIGNMENT PACKAGES ***
+%
+%\usepackage{array}
+% Frank Mittelbach's and David Carlisle's array.sty patches and improves
+% the standard LaTeX2e array and tabular environments to provide better
+% appearance and additional user controls. As the default LaTeX2e table
+% generation code is lacking to the point of almost being broken with
+% respect to the quality of the end results, all users are strongly
+% advised to use an enhanced (at the very least that provided by array.sty)
+% set of table tools. array.sty is already installed on most systems. The
+% latest version and documentation can be obtained at:
+% http://www.ctan.org/pkg/array
+
+
+% IEEEtran contains the IEEEeqnarray family of commands that can be used to
+% generate multiline equations as well as matrices, tables, etc., of high
+% quality.
+
+
+
+
+% *** SUBFIGURE PACKAGES ***
+%\ifCLASSOPTIONcompsoc
+%  \usepackage[caption=false,font=footnotesize,labelfont=sf,textfont=sf]{subfig}
+%\else
+%  \usepackage[caption=false,font=footnotesize]{subfig}
+%\fi
+% subfig.sty, written by Steven Douglas Cochran, is the modern replacement
+% for subfigure.sty, the latter of which is no longer maintained and is
+% incompatible with some LaTeX packages including fixltx2e. However,
+% subfig.sty requires and automatically loads Axel Sommerfeldt's caption.sty
+% which will override IEEEtran.cls' handling of captions and this will result
+% in non-IEEE style figure/table captions. To prevent this problem, be sure
+% and invoke subfig.sty's "caption=false" package option (available since
+% subfig.sty version 1.3, 2005/06/28) as this is will preserve IEEEtran.cls
+% handling of captions.
+% Note that the Computer Society format requires a sans serif font rather
+% than the serif font used in traditional IEEE formatting and thus the need
+% to invoke different subfig.sty package options depending on whether
+% compsoc mode has been enabled.
+%
+% The latest version and documentation of subfig.sty can be obtained at:
+% http://www.ctan.org/pkg/subfig
+
+
+
+
+% *** FLOAT PACKAGES ***
+%
+%\usepackage{fixltx2e}
+% fixltx2e, the successor to the earlier fix2col.sty, was written by
+% Frank Mittelbach and David Carlisle. This package corrects a few problems
+% in the LaTeX2e kernel, the most notable of which is that in current
+% LaTeX2e releases, the ordering of single and double column floats is not
+% guaranteed to be preserved. Thus, an unpatched LaTeX2e can allow a
+% single column figure to be placed prior to an earlier double column
+% figure.
+% Be aware that LaTeX2e kernels dated 2015 and later have fixltx2e.sty's
+% corrections already built into the system in which case a warning will
+% be issued if an attempt is made to load fixltx2e.sty as it is no longer
+% needed.
+% The latest version and documentation can be found at:
+% http://www.ctan.org/pkg/fixltx2e
+
+
+%\usepackage{stfloats}
+% stfloats.sty was written by Sigitas Tolusis. This package gives LaTeX2e
+% the ability to do double column floats at the bottom of the page as well
+% as the top. (e.g., "\begin{figure*}[!b]" is not normally possible in
+% LaTeX2e). It also provides a command:
+%\fnbelowfloat
+% to enable the placement of footnotes below bottom floats (the standard
+% LaTeX2e kernel puts them above bottom floats). This is an invasive package
+% which rewrites many portions of the LaTeX2e float routines. It may not work
+% with other packages that modify the LaTeX2e float routines. The latest
+% version and documentation can be obtained at:
+% http://www.ctan.org/pkg/stfloats
+% Do not use the stfloats baselinefloat ability as the IEEE does not allow
+% \baselineskip to stretch. Authors submitting work to the IEEE should note
+% that the IEEE rarely uses double column equations and that authors should try
+% to avoid such use. Do not be tempted to use the cuted.sty or midfloat.sty
+% packages (also by Sigitas Tolusis) as the IEEE does not format its papers in
+% such ways.
+% Do not attempt to use stfloats with fixltx2e as they are incompatible.
+% Instead, use Morten Hogholm'a dblfloatfix which combines the features
+% of both fixltx2e and stfloats:
+%
+% \usepackage{dblfloatfix}
+% The latest version can be found at:
+% http://www.ctan.org/pkg/dblfloatfix
+
+
+
+
+% *** PDF, URL AND HYPERLINK PACKAGES ***
+%
+%\usepackage{url}
+% url.sty was written by Donald Arseneau. It provides better support for
+% handling and breaking URLs. url.sty is already installed on most LaTeX
+% systems. The latest version and documentation can be obtained at:
+% http://www.ctan.org/pkg/url
+% Basically, \url{my_url_here}.
+
+
+
+
+% *** Do not adjust lengths that control margins, column widths, etc. ***
+% *** Do not use packages that alter fonts (such as pslatex).         ***
+% There should be no need to do such things with IEEEtran.cls V1.6 and later.
+% (Unless specifically asked to do so by the journal or conference you plan
+% to submit to, of course. )
+
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+
+\begin{document}
+%
+% paper title
+% Titles are generally capitalized except for words such as a, an, and, as,
+% at, but, by, for, in, nor, of, on, or, the, to and up, which are usually
+% not capitalized unless they are the first or last word of the title.
+% Linebreaks \\ can be used within to get better formatting as desired.
+% Do not put math or special symbols in the title.
+\title{AAA: High Agile Adaptive Application-awareness \\ Network for SDN}
+
+
+% author names and affiliations
+% use a multiple column layout for up to three different
+% affiliations
+\author{He Cai$^{1}$, Jun Deng$^{1}$, Xiaofei Wang$^{1}$
+\\
+${^1}$Tianjin Key Laboratory of Advanced Networking, %School of Computer Science and Technology,\\
+Tianjin University, Tianjin, China.
+%\begin{small}
+%*Prof. Keqiu Li is the corresponding author.
+%\end{small}
+}
+
+
+% conference papers do not typically use \thanks and this command
+% is locked out in conference mode. If really needed, such as for
+% the acknowledgment of grants, issue a \IEEEoverridecommandlockouts
+% after \documentclass
+
+% for over three affiliations, or if they all won't fit within the width
+% of the page (and note that there is less available width in this regard for
+% compsoc conferences compared to traditional conferences), use this
+% alternative format:
+% 
+%\author{\IEEEauthorblockN{Michael Shell\IEEEauthorrefmark{1},
+%Homer Simpson\IEEEauthorrefmark{2},
+%James Kirk\IEEEauthorrefmark{3}, 
+%Montgomery Scott\IEEEauthorrefmark{3} and
+%Eldon Tyrell\IEEEauthorrefmark{4}}
+%\IEEEauthorblockA{\IEEEauthorrefmark{1}School of Electrical and Computer Engineering\\
+%Georgia Institute of Technology,
+%Atlanta, Georgia 30332--0250\\ Email: see http://www.michaelshell.org/contact.html}
+%\IEEEauthorblockA{\IEEEauthorrefmark{2}Twentieth Century Fox, Springfield, USA\\
+%Email: homer@thesimpsons.com}
+%\IEEEauthorblockA{\IEEEauthorrefmark{3}Starfleet Academy, San Francisco, California 96678-2391\\
+%Telephone: (800) 555--1212, Fax: (888) 555--1212}
+%\IEEEauthorblockA{\IEEEauthorrefmark{4}Tyrell Inc., 123 Replicant Street, Los Angeles, California 90210--4321}}
+
+
+
+
+% use for special paper notices
+%\IEEEspecialpapernotice{(Invited Paper)}
+
+
+
+
+% make the title area
+\maketitle
+
+% As a general rule, do not put math, special symbols or citations
+% in the abstract
+\begin{abstract}
+The abstract goes here.
+\end{abstract}
+
+% no keywords
+
+
+
+
+% For peer review papers, you can put extra information on the cover
+% page as needed:
+% \ifCLASSOPTIONpeerreview
+% \begin{center} \bfseries EDICS Category: 3-BBND \end{center}
+% \fi
+%
+% For peerreview papers, this IEEEtran command inserts a page break and
+% creates the second title. It will be ignored for other modes.
+\IEEEpeerreviewmaketitle
+
+
+
+\section{Introduction}
+
+With the data traffic and network scale rapidly increaing, there exists huge demand for scalable network management. Meanwhile, network monitoring and application awareness play a increasingly critical role in Quality of Service(Qos),Traffic Engineering(TE) and cyber security.
+Briefly, application awareness is a basic technology to enhance  automation and intelligence of the network. It is divided into two processes: packet acquisition and traffic identification. Packet acquisition refers to capturing packets from switches through a mechanism or an algorithm. Traffic identification refers to parsing the five-tuple information of packets from different layer according to OSI model ,then  recognizing the application layer protocol with the help of DPI tools. Application-aware network can improve the visibility of itself , promote integration of different business and eliminate  faults quickly .However, the application awareness need integrate the high precision,high efficiency with real time, which is still a challange owing to the volume and variety of data in the large-scale network.
+
+Software-defined network (SDN) is a new technical architecture which decouple the network control plane from the data-forwarding plane. It advocates building an open and programmable network to provide flexible, central controlled(or centralized) and globally visible network services, through which SDN can facilitate the operation and maintenance of the data center(DC) network. In a software-defined network, packet acquisition depends on OpenFlow(OF) protocol,which is varied from the Netflow and Sflow used in traditional networks.
+
+Based on port, payload, and traffic behavior characteristics, DPI can identify a variety of  information including the application layer protocol of a data flow, and be applied in application-aware network. In traditional networks, DPI devices are bound to the data plane, which makes it impossible to visualize global fine-grained traffic in real time. Therefore,many people are concerned about the research and optimization of the combination of SDN and application awareness. However, most of the current solutions are to deploy DPI in the SDN controller.In this case, parsing each single packet will be  computationally heavy for controller. In addition, network scale, number of sampling nodes, sampling frequency and repetition rate of packet all increase performance consumption of controllers.On the other hand, in order to improve the accuracy of application recognition, the system must be able to capture continuous  packets of the same flow regarding to the characteristics of DPI.
+To solve the above problems, a agile, adaptive and cooperative sampling mechanism which can be applied to large-scale data center network is urgently needed. 
+
+
+\begin{figure}[!hhhhhhhhhht]
+\centering
+\includegraphics[width=8.5cm]{images/png_architecture.png}
+\caption{The System Architecture Of AAA}
+\label{aaa.png}
+\end{figure}
+
+\section{Related Work}
+\begin{itemize}
+
+\item A detailed introduction to the background: Why build an application-aware network - the contrast between traditional and SDN networks. 
+\item Introducting the problems existing in building a large-scale application-aware network (a reasonable collection of traffic in a large-scale network environment is a basic problem in the field of traffic monitoring and traffic engineering). 
+\item And including the solutions already on the basic problem, and the various problems that exist.
+\item Introducting the Intermediary centrality algorithm.
+\item Outline the algorithms and strategies we use.
+
+\end{itemize}
+
+\section{System Model and Design}
+
+\subsection{Overview of Model}
+
+% 通过3.1 和 3.2 中的算法选出了影响力较高、能覆盖所有的流量的节点后，并且确定了各交换机应该的采样时长和采样率后，控制器下放采样的指令，交换机按照设定的时间进行采样。然而采样策略的制定除了前面的两步外，还包括最后的协同策略，也即：各个交换机之间通过流量、拓扑之间的关系，按照某种时间或空间上的顺序，互相配合地将网络中的流准确、高效(减少无意义的重复包)地采集。我们给出多种的协同策略，并且最后对比了他们在采样的精度、数据包的重复率、以及对收集器的友好性。
+After selecting the nodes with high influence and covering all the traffic through the algorithms in 3.1 and 3.2, and determining the sampling duration and sampling rate of each switch, the controller will send the sampling instruction, and the switch will follow the set Time to sample. However, in addition to the previous two steps, the sampling strategy includes the final collaborative strategy, that is, the relationship between the traffic and the topology between the switches, and the network is coordinated with each other in a certain time or space. The flow in the stream is accurate and efficient (reducing the meaningless repeating packets). We present a variety of collaborative strategies, and finally compare their accuracy in sampling, packet repetition rate, and friendliness to the collector.
+
+%这是一种简洁的采样方式，当采样点和采样率确定后，控制器统一下放采样指令和停止采样的指令。也就是说，在这种模式下，各个采样点都是以同样的步伐和在进行，没有额外复杂的控制。其图示如下。
+This is a simple sampling method. When the sampling point and sampling rate are determined, the controller unifies the sampling instruction and the sampling instruction to stop sampling. That is to say, in this mode, each sampling point is performed at the same pace and without additional complicated control. Shows in Figure.\ref{Simultaneous_Sampling}.
+
+% 因为 R 是相同的，他们能够以相同节奏进行采样或是停止。
+Because $R $ is the same, they can sample or stop at the same rhythm.
+
+% 但是它本身有很多的缺点，1. 重复率过高： 因为节点的选出，可能包含大量的重复流，这是不可避免的，而如果所有交换节点都同时采样的话，那么同一条流的同一个包可能被多个节点同时采集并送往收集器。然而这些重复包都是毫无意义的，并且浪费了大量的收集器的处理资源和网络资源，同时也会减少采样到有用的数据包(可能会降低采样精度或者降低流的识别率)。 2.对收集器不友好。我们可以看下图。如果是统一采样策略，那么如果采样时间是 $t$，那么收集器在某个$t$时间段内接收到
+
+
+\begin{figure}[!!!!!!!!!!!!!!hhhhhhhhhht]
+\centering
+\subfigure[area coverage]
+{\includegraphics[width=4cm]{images/area_coverage.png}
+\label{fig_1_area}
+}
+\subfigure[time slot allocation]
+{\includegraphics[width=4cm]{images/slot_num_order.png}
+\label{fig_1_slot}
+}
+\caption{overview of model}
+\label{fig_1_model}
+\end{figure}
+
+\subsection{Sampling Point Selection} 
+
+In large-scale DC networks, while all the switches sample flows, the excessive frequency of sending flow tables and group tables will cause extra overhead for SDN controller. Therefore, we need a strategy that can select a small number of most influential sampling nodes so that the number of flows sampled by these nodes is close to or equal to the  global nodes. 
+We may find the situationis is very similar to the graph theory. In a subnet topology, based on the concept of graph theory, we regard switches as nodes and regard flow paths as edges. Therefore, we define a flow information matrix. Then we calculate betweenness centrality and the most influential nodes has the maximal betweenness centrality. As show in Algorithm 1, the strategy is called sampling node election algorithm based on betweenness centrality.
+
+The principle of the algorithm will be stated next, with respect to the notations in Table I being used throughout the paper.
+
+Firstly, initialize the matrix M=[$m_{ij}$] and the betweenness centrality $c_j$. Fig.\ref{png_sampling_point.png}-a shows a subnet topology, where there are 6 switch nodes and 6 flows. And we define: if $f_i$ passes through $sw_j$, the $m_{ij}$=1, otherwise $m_{ij}$=0. After initialization,as Fig.\ref{png_sampling_point.png}-b shows,we get a $I \ast J$ two-dimension matrix. Then calculate $c_j$ and $c_{max}$.
+
+\begin{equation}
+ c_{max} = \max\{ c_j \mid c_j=\sum_i{m_{ij}},i\in[1,I],j\in[1,J] \wedge  i,j\in Z\} 
+\end{equation}
+
+Senondly, elect the node with highest betweenness centrality as the sampling node and change $m_{ij}$ until each $m_{ij}$ = 0. As shown in Fig.\ref{png_sampling_point_in.png}, $c_{max}$ = $c_3$. Hence,the $sw_3$ is the first sampling node. Owing to $f_1$,$f_2$,$f_4$,$f_6$ pass through the $sw_3$, make $m_{ij}$ = 0($i$=1,2,4,6,$j \in [1,J]$). Then we can get a new marrix $M$ and calculate new $c_j$ and $c_{max}$ used for the next election. Repeating the above method, and electing the sampling node $sw_4$. Finally,we get $S$={$sw_3$,$sw_4$},when each $m_{ij}$=0.  
+
+
+
+
+\begin{algorithm}[h]
+\caption{Sampling Point Selection}
+\begin{algorithmic}[1]
+\REQUIRE ~~\\ The set of routers: $ R$ \\  The size of node will be selected: $K$ \\ The current flow information matrix: $M$
+\STATE define $R^s=\{\}$  //  The Set of Selected Routers
+
+\FOR{$k=1$; $k < K$; $k++$ }
+
+\FOR{each $R_i \in R-R^s$}
+\IF{$I_i^k > max$}
+\STATE $max = I_i^k$
+\STATE $SR = R_i$
+\ENDIF
+\ENDFOR
+\STATE put $SR$ to $R^s$
+\STATE mark $SR$ as $R_k$ in $R^s$
+\ENDFOR
+
+\RETURN $R^s$
+\label{code:recentEnd}
+\end{algorithmic}
+\end{algorithm}
+
+
+
+\begin{table}[h]
+\centering
+\caption{table}\label{tab:tab2}
+\begin{tabular}{c|c}
+\hline
+Nonation & Explanation\\
+\hline
+\hline
+M & the current flow information matrix \\
+\hline
+S & selected switches set \\
+\hline
+$sw_j$ & the $j$-th switch \\
+\hline
+$f_i$ & the $i$-th flow \\
+\hline
+$m_{ij}$ & the each value for $f_i$ and $sw_j$ in M,either 1 or 0 \\
+\hline
+$c_j$ & the betweenness centrality of $sw_j$  \\
+\hline
+$c_{max}$ & the max betweenness centrality of $sw_j$  \\
+\hline
+$I$ & the current number of flows  \\
+\hline
+$J$ & the current number of switches  \\
+\hline
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[!hhhhhhhhhht]
+\centering
+\includegraphics[width=8.5cm]{images/png_sampling_point.png}
+\caption{Intermediary center based on the number of streams}
+\label{png_sampling_point.png}
+\end{figure}
+
+\begin{figure}[!hhhhhhhhhht]
+\centering
+\includegraphics[width=8.5cm]{images/png_sampling_point_in.png}
+\caption{Sampling Point Selection}
+\label{png_sampling_point_in.png}
+\end{figure}
+
+\begin{algorithm}[h]
+\caption{Sampling Point Selection Based on Centrality Measure}
+\begin{algorithmic}[1]
+\REQUIRE  $M$ ~, $S$ ~, $c_j$
+\WHILE {$M != O$}
+\IF{ $c_{max}$ = $c_{j}$ }
+\STATE   Selecting  $sw_i$
+\ENDIF
+\STATE Puting $sw_j $ into  $ S $;
+\FORALL {$f_i$  which $m_{ij} = 1$} 
+\label{code:TrainBase:getc}
+\FORALL{ $sw_j$ which $j \in [i,J]$}
+\IF{ $m_{ij} = 1$ }
+\STATE  $m_{ij} = 0$
+\ENDIF
+\ENDFOR
+\label{code:TrainBase:pos}
+\ENDFOR
+\ENDWHILE 
+
+\RETURN $S$
+\label{code:recentEnd}
+\end{algorithmic}
+\end{algorithm}
+
+
+\subsection{Allocation of Time Slot}
+
+\begin{algorithm}[h]
+\caption{Allocation of Time Slot Based on XXX}
+\begin{algorithmic}[1]
+\REQUIRE  $M$ ~, $S$ ~, $c_j$
+
+\RETURN $S$
+\label{code:recentEnd}
+\end{algorithmic}
+\end{algorithm}
+
+
+\subsection{Order of Time Slot}
+ 
+\begin{algorithm}[h]
+\caption{Order of Time Slot Based on XXXXX}
+\begin{algorithmic}[1]
+\REQUIRE  $M$ ~, $S$ ~, $c_j$
+
+\RETURN $S$
+\label{code:recentEnd}
+\end{algorithmic}
+\end{algorithm}
+
+
+
+\section{Experiments and results}
+
+ 
+\begin{figure}[!hhhhhhhhhht]
+\centering
+\includegraphics[width=9cm]{images/png_same_time_sampling.png}
+\caption{Simultaneous Sampling}
+\label{Simultaneous_Sampling}
+\end{figure}
+
+
+
+ 
+
+\begin{figure}[!htp]
+    \begin{minipage}[t]{0.5\linewidth}%设定图片下字的宽度，在此基础尽量满足图片的长宽
+    \centering
+    \includegraphics[width=7cm]{images/png_three_nodes_test_topo.png}
+    \caption*{(a) Test Toplogy}%加*可以去掉默认前缀，作为图片单独的说明
+    \label{fig:side:a}
+    \end{minipage}
+    \begin{minipage}[t]{0.5\linewidth}%需要几张添加即可，注意设定合适的linewidth
+    \centering
+    \includegraphics[width=6cm]{images/png_small_topo.png}
+    \caption*{(b)Flow Information Matrix}
+    \label{fig:side:b}
+    \end{minipage}
+    \caption{This is total name.}%n张图片共享的说明
+
+\end{figure}
+
+
+
+\begin{itemize}
+\item Schematic diagram of strategy
+\item Algorithm
+\item Union/Find Grouping
+
+\end{itemize}
+
+
+\begin{figure}[!hhhhhhhhhht]
+\centering
+\includegraphics[width=9cm]{images/samplingModel.png}
+\caption{Even time-division sampling}
+\label{aaa.png}
+\end{figure}
+ 
+
+
+
+\begin{table}[]
+\centering
+\caption{110 Switches \& 22 Hosts \&  1400 Flows Comparison In Real Topology }
+\begin{tabular}{|c|c|c|c|} 
+
+
+\hline 
+Strategy & Captured  &Sampling Accuracy& Repeat Rate\\
+\hline 
+Single Time Sampling &  1069 &0.764 & 36.05\%\\
+\hline  
+
+Even-Divsion Time Sampling&1094 & 0.7814 & 12.86\%\\
+\hline
+One More Back-up Sw & 1152 & 0.7979 & 15.78\%\\
+
+\hline 
+\end{tabular}
+\end{table}
+
+
+
+\section{Conclusion}
+\begin{itemize}
+\item Lab environment
+\item Sampling accuracy comparison
+\item Sampling repetition rate comparison
+\item Greedy centrality algorithm experimental results
+ 
+\item Deduplication rate algorithm comparison
+
+\item Experimental comparison of adaptive co-sampling algorithm
+
+\begin{figure}[!hhhhhhhhhht]
+\centering
+\includegraphics[width=8.50cm]{images/compare.png}
+\caption{The definition of agile application-aware network}
+\label{aaa.png}
+\end{figure}
+
+
+
+\begin{figure}[!hhhhhhhhhht]
+\centering
+\includegraphics[width=8.50cm]{images/compare2.png}
+\caption{The definition of agile application-aware network}
+\label{aaa.png}
+\end{figure}
+\end{itemize}
+
+\begin{table}[]
+\centering
+\caption{Cost Matrix}
+\begin{tabular}{|c|c|c|c|} %l(left)居左显示 r(right)居右显示 c居中显示
+\hline 
+&S1&S2&S3\\
+\hline  
+S1&&4&2\\
+\hline 
+S2&&&4\\
+\hline 
+S3&&&\\
+\hline 
+\end{tabular}
+\end{table}
+
+\begin{table}[]
+\centering
+\caption{Comparison}
+\begin{tabular}{|l|c|r|c|} 
+
+\hline 
+Sampling Order&Cost&Accuracy&Packet Repeat Rate\\
+\hline  
+(S1,S2,S3)&8&100.0\%&20.46\%\\
+\hline 
+(S3,S1,S2)&6&100.0\%&15.50\%\\
+\hline 
+\end{tabular}
+\end{table}
+
+\begin{table}[]
+\centering
+\caption{15 Switches \& 30 Hosts \& Around 1000 Flows Comparison In Test Bed }
+\begin{tabular}{|c|c|} 
+
+\hline 
+Strategy&Packet Repeat Rate\\
+\hline  
+Greedy Algorithm & 4.39\%\\
+\hline
+Random & 5.93\%\\
+
+\hline 
+\end{tabular}
+\end{table}
+
+
+\begin{table}[]
+\centering
+\caption{110 Switches \& 22 Hosts \& Around 1000 Flows Comparison In Real Topology }
+\begin{tabular}{|c|c|} 
+
+\hline 
+Strategy&Packet Repeat Rate\\
+\hline  
+Greedy Algorithm & 6.03\%\\
+\hline
+The Most Bad & 7.54\%\\
+\hline 
+Random & 7.11\%\\
+\hline 
+\end{tabular}
+\end{table}
+
+
+
+
+
+
+
+
+
+
+
+%\section{Conclusion}
+
+%\begin{itemize}
+%\item[-] Case 1: $ \frac{1}{SW_{num}} < S_{rate} \Leftrightarrow Confliction $   \\
+%\item[-] Case 2: $ \frac{1}{SW_{num}} >= S_{rate} \Leftrightarrow no Confliction $ 
+
+%\end{itemize}
+
+ 
+
+
+
+
+
+% trigger a \newpage just before the given reference
+% number - used to balance the columns on the last page
+% adjust value as needed - may need to be readjusted if
+% the document is modified later
+%\IEEEtriggeratref{8}
+% The "triggered" command can be changed if desired:
+%\IEEEtriggercmd{\enlargethispage{-5in}}
+
+% references section
+
+% can use a bibliography generated by BibTeX as a .bbl file
+% BibTeX documentation can be easily obtained at:
+% http://mirror.ctan.org/biblio/bibtex/contrib/doc/
+% The IEEEtran BibTeX style support page is at:
+% http://www.michaelshell.org/tex/ieeetran/bibtex/
+%\bibliographystyle{IEEEtran}
+% argument is your BibTeX string definitions and bibliography database(s)
+%\bibliography{IEEEabrv,../bib/paper}
+%
+% <OR> manually copy in the resultant .bbl file
+% set second argument of \begin to the number of references
+% (used to reserve space for the reference number labels box)
+\begin{thebibliography}{1}
+
+\bibitem{1}
+S.~Yoon, T.~Ha, S.~Kim and H.~Lim,\hskip 1em plus 0.5em minus 0.4em
+Scalable Traffic Sampling using Centrality Measure on Software-Defined Networks, in \emph{IEEE Communications Magazine}, pp.43-49, July 2017.
+
+\bibitem{1}
+M.~Malboubi, L.~Wang, C.N.~Chuah, P.~Sharma,\hskip 1em plus 0.5em minus 0.4em
+Intelligent SDN based Traffic (de)Aggregation and Measurement Paradigm (iSTAMP), in \emph{IEEE INFOCOM}, Apr 2014.
+
+\bibitem{1}
+L.~Tong and W.~Gao,\hskip 1em plus 0.5em minus 0.4em
+Application-Aware Traffic Scheduling for Workload Offloading in Mobile Clouds, in \emph{IEEE INFOCOM}, pp.1-9, Apr 2016.
+
+\bibitem{1}
+J.~Jiang, S.~Ma, B.~Li and B.~Li,\hskip 1em plus 0.5em minus 0.4em
+Symbiosis: Network-Aware Task Scheduling in Data-Parallel Frameworks, in \emph{IEEE INFOCOM}, pp.10-14, Apr 2016.
+
+\bibitem{1}
+P.~Bakopoulos, K.~Christodoulopoulos, G.~Landi et al,\hskip 1em plus 0.5em minus 0.4em
+NEPHELE: An End-to-End Scalable and Dynamically Reconfgurable Optical Architecture for Application-Aware SDN Cloud Data Centers, in \emph{IEEE Communitions Magazine}, pp.178-188, Feb 2018.
+
+\bibitem{2}
+J.~Xu, J.Y.~Wang, Q.~Qi, H.F.~Sun and B.~He,\hskip 1em plus 0.5em minus 0.4em
+IARA: An Intelligent Application-aware VNF for Network Resource Allocation with Deep Learning, in \emph{IEEE SECON}, pp.1-3, June 2018.
+
+\bibitem{2}
+J.~Suh, T.T.~Kwon, C.~Dixon, W.~Felter and J.~Carter,\hskip 1em plus 0.5em minus 0.4em
+OpenSample: A Low-latency, Sampling-based Measurement Platform for Commodity SDN, in \emph{IEEE ICDCS}, pp.228-237, July 2014.
+
+\bibitem{2}
+Z.~Su, T.~Wang, Y.~Xia and M.~Hamdi,\hskip 1em plus 0.5em minus 0.4em
+CeMon: A Cost-effective Flow Monitoring System in Software Defined Networks, in \emph{Computer Networks}, pp.101-115, Dec 2015.
+
+\bibitem{3}
+N.F.~Huang, C.C.~Li, C.H.~Li, C.C.~Chen,C.H.~C and I.H.~Hsu,\hskip 1em plus 0.5em minus 0.4em
+Application Identification System or SDN QoS based on Machine Learning and DNS Responses, in \emph{APNOMS}, pp.407-410, Sept 2017.
+
+\bibitem{3}
+S.~Jeong, D.~Lee, J.~Hyun, J.~Li, and J.W.~Hong,\hskip 1em plus 0.5em minus 0.4em
+Application-aware Traffic Engineering in Software-Defined Network, in \emph{APNOMS}, pp.315-318, Sept 2017.
+
+\bibitem{3}
+G.~Cheng and Y.~Tang,\hskip 1em plus 0.5em minus 0.4em
+eOpenFlow: Software Defined Sampling via a Highly Adoptable OpenFlow Extension, in \emph{IEEE ICC}, pp.1-6, May 2017.
+
+
+\bibitem{3}
+S.~Zhao and D.~Medhi,\hskip 1em plus 0.5em minus 0.4em
+Application Performance Optimization Using Application-Aware Networking, in \emph{IEEE NOMS},pp.1-6, Apr 2018.
+
+\bibitem{4}
+M.~Malboubi, S.M.~Peng, P.~Sharma and C.N.~Chuah,\hskip 1em plus 0.5em minus 0.4em
+A Learning-based Measurement Framework for Traffic Matrix Inference in Software Defined Networks, in \emph{Computers \& Electrical Engineering}, Dec 2017.
+
+\bibitem{4}
+K.~Bilal, S.U.~Khan, L.~Zhang et al,\hskip 1em plus 0.5em minus 0.4em
+Quantitative comparisons of the state-of-the-art data center architectures, in \emph{Concurrency \& Computation Practice \& Experience}, Dec 2017.
+
+\end{thebibliography}
+
+
+
+
+% that's all folks
+\end{document}
+
+
