@@ -106,7 +106,7 @@
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{multirow}
-\usepackage{amsmath,amssymb}
+\usepackage{amsmath,amssymb,amsfonts}
 \renewcommand{\algorithmicrequire}{ \textbf{Input:}} %Use Input in the format of Algorithm
 \renewcommand{\algorithmicensure}{ \textbf{Output:}} %UseOutput in the format of Algorithm
 
@@ -339,6 +339,7 @@
 \hyphenation{op-tical net-works semi-conduc-tor}
 
 
+
 \begin{document}
 %
 % paper title
@@ -465,7 +466,58 @@ This is a simple sampling method. When the sampling point and sampling rate are 
 Because $R $ is the same, they can sample or stop at the same rhythm.
 
 % 但是它本身有很多的缺点，1. 重复率过高： 因为节点的选出，可能包含大量的重复流，这是不可避免的，而如果所有交换节点都同时采样的话，那么同一条流的同一个包可能被多个节点同时采集并送往收集器。然而这些重复包都是毫无意义的，并且浪费了大量的收集器的处理资源和网络资源，同时也会减少采样到有用的数据包(可能会降低采样精度或者降低流的识别率)。 2.对收集器不友好。我们可以看下图。如果是统一采样策略，那么如果采样时间是 $t$，那么收集器在某个$t$时间段内接收到
+\begin{equation}
+\begin{split}
+%\begin{gather}
+\max \quad {\sum\limits_i^n {\left( {\alpha  \cdot \left( {\frac{{{v_i} \cdot \left| {\widetilde {{S_i}}} \right|}}{{\left| {{F^c}} \right|}}} \right)} \right)}  + \frac{{\left| {\widetilde {{S_i}}} \right|}}{{{\raise0.7ex\hbox{$T$} \!\mathord{\left/
+ {\vphantom {T t}}\right.\kern-\nulldelimiterspace}
+\!\lower0.7ex\hbox{$t$}}}} \cdot \left( {\beta  \cdot {S_i} + \gamma  \cdot {H_i}} \right)} \\
+-\frac{\alpha }{\left| {{F}^{c}} \right|}\cdot \sum\limits_{{{f}_{k}}\in {{F}^{c}}}{\sum\limits_{l=1}^{{T}/{t}\;}{\left( P\left\{ N_{p}^{k}\left( t \right)>0 \right\}\cdot \psi \left( {{f}_{k}},{{s}^{l}} \right) \right)}}
+%\end{gather}
+\end{split}
+\end{equation}
+subject to:
+\begin{equation}
+{v_i} = \sum\limits_{{f_k} \in {F^C}} {P\left\{ {N_p^k\left( t \right) > 0} \right\}}
+\end{equation}
+\begin{equation}
+U = \left\{ {{R_i},{f_k} \in F_i^c \wedge {s^l} \in \widetilde {{S_i}}} \right\}
+\end{equation}
+\begin{equation}
+\psi \left( {{f_k},{s^l}} \right) = \left\{ \begin{array}{l}
+\left| U \right| - 1,{\rm{    }}\left| U \right| \ge 1\\
+{\rm{   }}0\quad \quad \; \; ,\, \left| U \right| = 0
+\end{array} \right.
+\end{equation}
 
+\begin{equation}
+\alpha  + \beta  + \gamma  = 1
+\end{equation}
+\begin{equation}
+\sum\nolimits_i^n {f(\widetilde {{S_i}}) \le } K,\quad f(\widetilde {{S_i}}) = \left\{ \begin{array}{l}
+1,\ \ \left| {\widetilde {{S_i}}} \right| \ge 1\\
+0,\ \ \left| {\widetilde {{S_i}}} \right| = 0
+\end{array} \right.
+\end{equation}
+\begin{equation}
+\sum\nolimits_i^n {{w_i} \cdot \varphi (\widetilde {{S_i}},{s^l}) \le C \cdot } t,{\rm{  }}\forall {{\rm{s}}^l} \wedge \varphi (\widetilde {{S_i}},{s^l}) = \left\{ \begin{array}{l}
+0,{s^l} \notin \widetilde {{S_i}}\\
+t,{s^l} \in \widetilde {{S_i}}
+\end{array} \right.
+\end{equation}
+\begin{equation}
+l \le {\raise0.7ex\hbox{$T$} \!\mathord{\left/
+ {\vphantom {T t}}\right.\kern-\nulldelimiterspace}
+\!\lower0.7ex\hbox{$t$}},\forall {s^l} \wedge t \le T
+\end{equation}
+\begin{equation}
+K \le n,\forall {R_i}
+\end{equation}
+\begin{equation}
+\left| {\widetilde {{S_i}}} \right| \le {\raise0.7ex\hbox{$T$} \!\mathord{\left/
+ {\vphantom {T t}}\right.\kern-\nulldelimiterspace}
+\!\lower0.7ex\hbox{$t$}},\forall i
+\end{equation}
 
 \begin{figure}[!!!!!!!!!!!!!!hhhhhhhhhht]
 \centering
@@ -493,36 +545,22 @@ Firstly, initialize the matrix M=[$m_{ij}$] and the betweenness centrality $c_j$
 \begin{equation}
  c_{max} = \max\{ c_j \mid c_j=\sum_i{m_{ij}},i\in[1,I],j\in[1,J] \wedge  i,j\in Z\} 
 \end{equation}
+\begin{equation}
+D_{i}^{k}={\left| {{F}_{i}}-\bigcup\nolimits_{c}^{k-1}{\widetilde{{{F}_{c}}}} \right|}/{\left| F-\bigcup\nolimits_{c}^{k-1}{\widetilde{{{F}_{c}}}} \right|}\;
+\end{equation}
+\begin{equation}
+%{{H}_{i}}=\frac{T{{F}_{i}}}{TF}
+{{H}_{i}}={T{{F}_{i}}}/{TF}\;
+\end{equation}
+\begin{equation}
+%{{S}_{i}}=\frac{{{C}_{i}}}{\sum\nolimits_{i}^{n}{{{C}_{i}}}}
+{{S}_{i}}={{{C}_{i}}}/{\sum\nolimits_{i}^{n}{{{C}_{i}}}}\;
+\end{equation}
+\begin{equation}
+I_{i}^{k}=\alpha \cdot D_{i}^{k}+\beta \cdot {{S}_{i}}+\gamma \cdot {{H}_{i}}
+\end{equation}
 
 Senondly, elect the node with highest betweenness centrality as the sampling node and change $m_{ij}$ until each $m_{ij}$ = 0. As shown in Fig.\ref{png_sampling_point_in.png}, $c_{max}$ = $c_3$. Hence,the $sw_3$ is the first sampling node. Owing to $f_1$,$f_2$,$f_4$,$f_6$ pass through the $sw_3$, make $m_{ij}$ = 0($i$=1,2,4,6,$j \in [1,J]$). Then we can get a new marrix $M$ and calculate new $c_j$ and $c_{max}$ used for the next election. Repeating the above method, and electing the sampling node $sw_4$. Finally,we get $S$={$sw_3$,$sw_4$},when each $m_{ij}$=0.  
-
-
-
-
-\begin{algorithm}[h]
-\caption{Sampling Point Selection}
-\begin{algorithmic}[1]
-\REQUIRE ~~\\ The set of routers: $ R$ \\  The size of node will be selected: $K$ \\ The current flow information matrix: $M$
-\STATE define $R^s=\{\}$  //  The Set of Selected Routers
-
-\FOR{$k=1$; $k < K$; $k++$ }
-
-\FOR{each $R_i \in R-R^s$}
-\IF{$I_i^k > max$}
-\STATE $max = I_i^k$
-\STATE $SR = R_i$
-\ENDIF
-\ENDFOR
-\STATE put $SR$ to $R^s$
-\STATE mark $SR$ as $R_k$ in $R^s$
-\ENDFOR
-
-\RETURN $R^s$
-\label{code:recentEnd}
-\end{algorithmic}
-\end{algorithm}
-
-
 
 \begin{table}[h]
 \centering
@@ -569,29 +607,28 @@ $J$ & the current number of switches  \\
 \end{figure}
 
 \begin{algorithm}[h]
-\caption{Sampling Point Selection Based on Centrality Measure}
+\caption{Sampling Point Selection}
 \begin{algorithmic}[1]
-\REQUIRE  $M$ ~, $S$ ~, $c_j$
-\WHILE {$M != O$}
-\IF{ $c_{max}$ = $c_{j}$ }
-\STATE   Selecting  $sw_i$
-\ENDIF
-\STATE Puting $sw_j $ into  $ S $;
-\FORALL {$f_i$  which $m_{ij} = 1$} 
-\label{code:TrainBase:getc}
-\FORALL{ $sw_j$ which $j \in [i,J]$}
-\IF{ $m_{ij} = 1$ }
-\STATE  $m_{ij} = 0$
-\ENDIF
-\ENDFOR
-\label{code:TrainBase:pos}
-\ENDFOR
-\ENDWHILE 
+\REQUIRE ~~\\ The set of routers: $ R$ \\  The size of node will be selected: $K$ \\ The current flow information matrix: $M$
+\STATE define $R^s=\{\}$  //  The Set of Selected Routers
 
-\RETURN $S$
+\FOR{$k=1$; $k < K$; $k++$ }
+
+\FOR{each $R_i \in R-R^s$}
+\IF{$I_i^k > max$}
+\STATE $max = I_i^k$
+\STATE $SR = R_i$
+\ENDIF
+\ENDFOR
+\STATE put $SR$ to $R^s$
+\STATE mark $SR$ as $R_k$ in $R^s$
+\ENDFOR
+
+\RETURN $R^s$
 \label{code:recentEnd}
 \end{algorithmic}
 \end{algorithm}
+
 
 
 \subsection{Allocation of Time Slot}
@@ -599,9 +636,21 @@ $J$ & the current number of switches  \\
 \begin{algorithm}[h]
 \caption{Allocation of Time Slot Based on XXX}
 \begin{algorithmic}[1]
-\REQUIRE  $M$ ~, $S$ ~, $c_j$
-
-\RETURN $S$
+\REQUIRE  $K$~,$L$~,$C$~, weight $W=\{w_1,w_2...,w_k\}$~,value $V=\{v_1,v_2...,v_k\}$
+%\ENSURE $N$
+\FOR{$i$ $\leftarrow$ 1~to~$K$}
+\FOR{$j$ $\leftarrow$ 1~to~$C$}
+\IF{ $w_{i} \leq j$ }
+\STATE $F_{i,j} \leftarrow F_{i-1,j}$
+\ELSE 
+\STATE $M \leftarrow \min \{ L,j/w_{i}\}$
+\FOR{$n_{i}$ $\leftarrow$ 1~to~$M$}
+\STATE $F_{i,j-1} \leftarrow \max \{ F_{i-1,j},F_{i-1,j-w_{i} \cdot n_{i}}+v_{i} \cdot n_{i}\}$
+\ENDFOR
+\ENDIF
+\ENDFOR
+\ENDFOR
+\RETURN reverse~iteration,output~$N=\{n_{1},n_{2}...,n_{k}\}$
 \label{code:recentEnd}
 \end{algorithmic}
 \end{algorithm}
@@ -624,35 +673,6 @@ $J$ & the current number of switches  \\
 \section{Experiments and results}
 
  
-\begin{figure}[!hhhhhhhhhht]
-\centering
-\includegraphics[width=9cm]{images/png_same_time_sampling.png}
-\caption{Simultaneous Sampling}
-\label{Simultaneous_Sampling}
-\end{figure}
-
-
-
- 
-
-\begin{figure}[!htp]
-    \begin{minipage}[t]{0.5\linewidth}%设定图片下字的宽度，在此基础尽量满足图片的长宽
-    \centering
-    \includegraphics[width=7cm]{images/png_three_nodes_test_topo.png}
-    \caption*{(a) Test Toplogy}%加*可以去掉默认前缀，作为图片单独的说明
-    \label{fig:side:a}
-    \end{minipage}
-    \begin{minipage}[t]{0.5\linewidth}%需要几张添加即可，注意设定合适的linewidth
-    \centering
-    \includegraphics[width=6cm]{images/png_small_topo.png}
-    \caption*{(b)Flow Information Matrix}
-    \label{fig:side:b}
-    \end{minipage}
-    \caption{This is total name.}%n张图片共享的说明
-
-\end{figure}
-
-
 
 \begin{itemize}
 \item Schematic diagram of strategy
@@ -664,19 +684,26 @@ $J$ & the current number of switches  \\
 
 \begin{figure}[!hhhhhhhhhht]
 \centering
-\includegraphics[width=9cm]{images/samplingModel.png}
-\caption{Even time-division sampling}
+\includegraphics[width=8.50cm]{images/compare.png}
+\caption{The definition of agile application-aware network}
 \label{aaa.png}
 \end{figure}
- 
+
+
+\begin{figure}[!hhhhhhhhhht]
+\centering
+\includegraphics[width=8.50cm]{images/compare2.png}
+\caption{The definition of agile application-aware network}
+\label{aaa.png}
+\end{figure}
+
 
 
 
 \begin{table}[]
 \centering
 \caption{110 Switches \& 22 Hosts \&  1400 Flows Comparison In Real Topology }
-\begin{tabular}{|c|c|c|c|} 
-
+\begin{tabular}{|c|c|c|c|}  %l(left)居左显示 r(right)居右显示 c居中显示
 
 \hline 
 Strategy & Captured  &Sampling Accuracy& Repeat Rate\\
@@ -704,96 +731,7 @@ One More Back-up Sw & 1152 & 0.7979 & 15.78\%\\
 \item Deduplication rate algorithm comparison
 
 \item Experimental comparison of adaptive co-sampling algorithm
-
-\begin{figure}[!hhhhhhhhhht]
-\centering
-\includegraphics[width=8.50cm]{images/compare.png}
-\caption{The definition of agile application-aware network}
-\label{aaa.png}
-\end{figure}
-
-
-
-\begin{figure}[!hhhhhhhhhht]
-\centering
-\includegraphics[width=8.50cm]{images/compare2.png}
-\caption{The definition of agile application-aware network}
-\label{aaa.png}
-\end{figure}
 \end{itemize}
-
-\begin{table}[]
-\centering
-\caption{Cost Matrix}
-\begin{tabular}{|c|c|c|c|} %l(left)居左显示 r(right)居右显示 c居中显示
-\hline 
-&S1&S2&S3\\
-\hline  
-S1&&4&2\\
-\hline 
-S2&&&4\\
-\hline 
-S3&&&\\
-\hline 
-\end{tabular}
-\end{table}
-
-\begin{table}[]
-\centering
-\caption{Comparison}
-\begin{tabular}{|l|c|r|c|} 
-
-\hline 
-Sampling Order&Cost&Accuracy&Packet Repeat Rate\\
-\hline  
-(S1,S2,S3)&8&100.0\%&20.46\%\\
-\hline 
-(S3,S1,S2)&6&100.0\%&15.50\%\\
-\hline 
-\end{tabular}
-\end{table}
-
-\begin{table}[]
-\centering
-\caption{15 Switches \& 30 Hosts \& Around 1000 Flows Comparison In Test Bed }
-\begin{tabular}{|c|c|} 
-
-\hline 
-Strategy&Packet Repeat Rate\\
-\hline  
-Greedy Algorithm & 4.39\%\\
-\hline
-Random & 5.93\%\\
-
-\hline 
-\end{tabular}
-\end{table}
-
-
-\begin{table}[]
-\centering
-\caption{110 Switches \& 22 Hosts \& Around 1000 Flows Comparison In Real Topology }
-\begin{tabular}{|c|c|} 
-
-\hline 
-Strategy&Packet Repeat Rate\\
-\hline  
-Greedy Algorithm & 6.03\%\\
-\hline
-The Most Bad & 7.54\%\\
-\hline 
-Random & 7.11\%\\
-\hline 
-\end{tabular}
-\end{table}
-
-
-
-
-
-
-
-
 
 
 
@@ -803,7 +741,6 @@ Random & 7.11\%\\
 %\item[-] Case 1: $ \frac{1}{SW_{num}} < S_{rate} \Leftrightarrow Confliction $   \\
 %\item[-] Case 2: $ \frac{1}{SW_{num}} >= S_{rate} \Leftrightarrow no Confliction $ 
 
-%\end{itemize}
 
  
 
