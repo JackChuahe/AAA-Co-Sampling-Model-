@@ -691,21 +691,40 @@ This optimization problem can be defined by the following formula(16). Where $ \
 \min \sum{(\left| \widetilde{{{S}_{i}}}\bigcap \widetilde{{{S}_{j}}} \right|}\cdot \left| \widetilde{{{F}_{i}}}\bigcap \widetilde{{{F}_{j}}} \right|),\forall i,j\wedge i\ne j
 \end{equation}
 
-This problem is a problem that cannot be solved in a polynomial time, so we consider a simple greedy algorithm to solve the approximate optimal solution of the problem.
-
+From the definition of the problem, the search backtracking method can be used to solve the optimal solution, but it is a problem that cannot be solved in a polynomial time. Therefore, we consider a simple greedy algorithm to solve the approximate optimal solution of the problem.
  
 \begin{algorithm}[h]
 \caption{Order of Time Slot Based on Greedy}
 \begin{algorithmic}[1]
 \REQUIRE  $M$ ~, $S$ ~, $c_j$
-\STATE Have no  idea 
-\STATE Have no idea
-\RETURN $S$
+\WHILE{$CNT[i] > 0,\exists i \wedge i = 1,2...,k$}
+\FOR{$i=1$; $i <= K$; $i++$}
+\IF{$CNT[i] > 0$}
+\STATE $Min = Max$ $Integer$
+\FOR{$l=1$; $l < \frac{T}{t}$; $l++$}
+\IF{$M^{slot}[i][l] = 0$}
+\STATE $temp = \sum^{K}_{j=1 \wedge j != i}(\left| \widetilde{{{F}_{i}}}\bigcap \widetilde{{{F}_{j}}} \right| \cdot M^{slot}[j][l]) + H[j] $
+\IF{$temp < Min$}
+\STATE $Min = temp$; $Sp = l$ 
+\ENDIF
+\ENDIF
+\ENDFOR
+\STATE$M^{slot}[i][Sp] = 1$; $ CNT[i]--$; $H[Sp] = Min$
+\ENDIF
+\ENDFOR
+\ENDWHILE
+
+\RETURN $M^{slot}$
 \label{code:recentEnd}
 \end{algorithmic}
 \end{algorithm}
 
-
+\begin{figure}[!hhhhhhhhhht]
+\centering
+\includegraphics[width=8cm]{images/greedy_for_order_slot.png}
+\caption{comparison of sampling flow number at different slot}
+\label{aaa.png}
+\end{figure}
 
 \section{Experiments and results}
 In order to verify the effectiveness and performance of our algorithm, we have built a laboratory bed based on floodlight controller and openvswitch + mininet. The whole experimental bed contains 12 Dell XPS hosts, 20 core CPU, and Ubuntu 16.06.2 LTS. One runs a floodlight controller that fuses our algorithm, the other runs a data collector, and the remaining 10 deploy a network topology with 110 switch nodes and 50 host nodes. The experimental traffic dataset comes from the open project "the WIDE Project". We selected data from 14:00-14:15 in August 6, 2018. After cleaning and screening, we collate 5000 data streams for experiments. In the experiment, the number of data streams changed from 1000 to 5000..
