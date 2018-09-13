@@ -657,25 +657,32 @@ Senondly, elect the node with highest betweenness centrality as the sampling nod
 \subsection{Allocation of Time Slot}
 
 
-After the nodes are selected, each node needs to be assigned a number of slots. This is a typical multi-clip problem: there are a total of $K$ items to choose $(R^s_1-R^s_k)$, each type of item to be selected has $\frac{T}{t}$ ($\frac{T}{t}$ Slots can be selected), and each item is in one unit Slot t The benefit is $v(R_i, t_i)$ and the cost is $W(R_i, t_i)$. Therefore, we can use the algorithm for solving multiple backpacks to allocate the number of slots for each Ri. $v(R_i,t_i)$ is the part of Model(l)  in the model , take $ | \widetilde S |$ to 1. And $W(R_i, t_i)$ = the packet rate pkts/t of the unit t time Ri. When quantifying Di of $v(R_i, t_i)$, we assume in model (1) that the arrival rate of the packet of fi obeys the Poisson distribution. In the actual process, it is difficult to know the $\lambda $ intensity of the packet of a stream. We can pass fi The rate of the package to characterize.
-When using multiple backpacks to solve this problem, there may be a phenomenon of hunger distribution: some low-impact nodes are assigned to 0 slots. This phenomenon is not avoided. We assign a Slot to each node from the high-impact to low-impact nodes (Rs1-Rsk) in advance (in the case where the cost does not exceed the total constraint), and then use multiple backpacks to solve You can try to avoid hunger.
+After the nodes are selected the number of slots needs to be allocated to these nodes. For $R_i$, the number of selected slots is not linearly related to the value. Equation (3) describes the relationship between them. The value function $\alpha \cdot \frac{\delta ({{v}_{i}},\left| \widetilde{{{S}_{i}}} \right|)}{\left| {{F}^{c}} \right|}+\frac{\left| \widetilde{{{S}_{i}}} \right|}{{T}/{t}\;}\cdot (\beta \cdot {{S}_{i}}+\gamma \cdot {{H}_{i}})$ increases as the number of Slots increases in $Mode(1)$. When the ELSE in equation (3) is satisfied, there will be another growth trend, which depends on its $S_i$ and $H_i$ value.The reason is that if a node captures 100\% of the flows it currently covers, more Slot allocations will not generate more value for the current flows capture, but only increase the potential flows capture.Therefore, this cannot use the multi-catch algorithm to solve the optimal solution. The problem can be solved separately in two parts, the first part is found in formula (3), when each node satisfies ELSE. In this case, the number of optional Slots for each node can be determined, and then the problem is converted into a multi-clip problem to solve the optimal solution for a total of K items to be selected (Rs1-Rsk), each type of candidate to be selected There are $N^l_i$, and the return of each item in one unit Slot is $v(R_i,t)$, the cost is $w(R_i,t)$, and the constraint is C. After the first part is solved, the remaining C, as the constraint of the second part, is still a multi-clip problem. At this time, the number of optional slots of each node is $\frac{T}{t} $ minus the first part. The number of nodes that have been assigned. Each part can get the optimal solution of each part. Solving the complexity of the problem $O(\frac{T}{t} \cdot |R^s| \cdot C)$ When T is too large or t is too small and C is too large, the time to solve is unacceptable. 
 
-When solving multiple backpacks, in addition to the problem of hunger, the solution efficiency is the complexity of $O(n^2)$. When $T$ is too large or t is too small and C is large, it is unacceptable to solve the optimal solution time. We give a simple and efficient strategy. Algorithm 2 shows this approach.
+We give a simpler and more efficient to achieve, combines the two processes into the same process, using simple influence from high to low polling distribution, so that The current high-impact node of preferentially allocates a Slot. When the node satisfies the ELSE part of the formula (3), the influence prioritization in the subsequent allocation process only uses $\frac{1}{{T}/{t}\;}\cdot (\beta \cdot {{S}_{i}}+\gamma \cdot {{H}_{i}})$, and the nodes that does not satisfy the formula (3) $ELSE$, Continue to use the comprehensive influence to sort. This algorithm is consistent with the formula definition in Model(1).
 
+For the current influence of a node under one unit slot $t$, a Slot is assigned from high to low, and each round is allocated, and the influence of each node is reordered (because some nodes will satisfy the ELSE condition of formula (3), and Causes a change in influence) until C = 0 or cannot be assigned.
 \begin{algorithm}[h]
-\caption{Allocation of Time Slot Based on XXX}
+\caption{Impact Priority Polling Allocation Slots}
 \begin{algorithmic}[1]
-\REQUIRE  $K$~,$L$~,$C$~, weight $W=\{w_1,w_2...,w_k\}$~,value $V=\{v_1,v_2...,v_k\}$
-\WHILE{$C > 0$}
-\STATE $Cas = 1$
-\FOR{$k=1$; $k < K$; $k++$}
-\IF{$C >= w_i*Cas$}
-\STATE $count[i]+= Cas$
-\STATE $C = C - w_i * Cas$
+\STATE Define $CNT[1..K] = 0$;   $\widetilde{I}[1..K] = 0;$
+\WHILE{$C > 0$ OR $C$ is different from the last round } 
+\FOR{$each$ $R^s_i \in R^s$ }
+\IF{$R_i$ satisfy$ \delta \left( {{v_i},\left| CNT[i] \right|} \right) $  the $ELSE$ condition }
+\STATE  $ \widetilde{I}[i]  = \frac{1}{{T}/{t}\;}\cdot (\beta \cdot {{S}_{i}}+\gamma \cdot {{H}_{i}})$ 
+\ELSE 
+\STATE  $ \widetilde{I}[i]  = \alpha \cdot \frac{{{v}_{i}\cdot 1}}{\left| {{F}^{c}} \right|}+\frac{1}{{T}/{t}\;} \cdot (\beta \cdot {{S}_{i}}+\gamma \cdot {{H}_{i}})$
+\ENDIF
+\ENDFOR
+\STATE Descending sorting $ \widetilde{I}  $;
+\FOR{$i=1$; $i < K$; $i++$}
+\IF{$C >= w_i$}
+\STATE $CNT[i]++$
+\STATE $C = C - w_i $
 \ENDIF
 \ENDFOR
 \ENDWHILE
-\RETURN reverse~iteration,output~$N=\{n_{1},n_{2}...,n_{k}\}$
+\RETURN $CNT$
 \label{code:recentEnd}
 \end{algorithmic}
 \end{algorithm}
@@ -692,7 +699,8 @@ This optimization problem can be defined by the following formula(16). Where $ \
 \end{equation}
 
 From the definition of the problem, the search backtracking method can be used to solve the optimal solution, but it is a problem that cannot be solved in a polynomial time. Therefore, we consider a simple greedy algorithm to solve the approximate optimal solution of the problem.
- 
+Algorithm 3 gives the steps. In the previous section, the $CNT$ array has been calculated. At the beginning of the algorithm, the $M^slot$ two-dimensional array is initialized to store the placement relationship between $R_i$ and $s^l$: $M^slot[i][l] = 1$, which represents the Ri node sampling at $s^l$. In each round, a slot is selected for the node whose CNT is not 0, and the total number of coverages of the stream generated after the selected slot is selected is the minimum value of all the optional slots. Therefore, through each round, for each node whose $CNT$ is not 0, a Slot that minimizes the total number of coverages of the current entire system stream is arbitrarily placed until all the Slots of the nodes are placed (all $CNT$ are 0). ), we get an approximate optimal solution.
+In the solution process, the $H[l]$ array is used to store the total number of coverages of each Slot stream, and when $s^l$ is selected once, $H[l]$ is updated. After the node $R_i$ selects $s^l$, the new flow cover total of $s^l$ is calculated as: $H[l] = \sum^{K}_{j=1 \wedge j != i}(\left| \widetilde{{{F}_{i}}}\bigcap \widetilde{{{F}_{j}}} \right| \cdot M^{slot}[j][l]) + H[l]$. That is, in equation (17), $\left| \widetilde{{{S}_{i}}}\bigcap \widetilde{{{S}_{j}}} \right| = 1$, and j is the node that has been selected for placement in $s^l$. The demonstration of the whole algorithm is shown in Fig. 6. In the example, the approximate solution we solved by this algorithm is 35, and the optimal solution is 33.
 \begin{algorithm}[h]
 \caption{Order of Time Slot Based on Greedy}
 \begin{algorithmic}[1]
@@ -703,7 +711,7 @@ From the definition of the problem, the search backtracking method can be used t
 \STATE $Min = Max$ $Integer$
 \FOR{$l=1$; $l < \frac{T}{t}$; $l++$}
 \IF{$M^{slot}[i][l] = 0$}
-\STATE $temp = \sum^{K}_{j=1 \wedge j != i}(\left| \widetilde{{{F}_{i}}}\bigcap \widetilde{{{F}_{j}}} \right| \cdot M^{slot}[j][l]) + H[j] $
+\STATE $temp = \sum^{K}_{j=1 \wedge j != i}(\left| \widetilde{{{F}_{i}}}\bigcap \widetilde{{{F}_{j}}} \right| \cdot M^{slot}[j][l]) + H[l] $
 \IF{$temp < Min$}
 \STATE $Min = temp$; $Sp = l$ 
 \ENDIF
@@ -722,8 +730,8 @@ From the definition of the problem, the search backtracking method can be used t
 \begin{figure}[!hhhhhhhhhht]
 \centering
 \includegraphics[width=8cm]{images/greedy_for_order_slot.png}
-\caption{comparison of sampling flow number at different slot}
-\label{aaa.png}
+\caption{Illustrating sampling node slots placement based on greedy algorithm}
+\label{slot_order}
 \end{figure}
 
 \section{Experiments and results}
