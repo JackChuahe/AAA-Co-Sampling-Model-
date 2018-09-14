@@ -453,22 +453,20 @@ To solve the above problems, a agile, adaptive and cooperative sampling mechanis
 \end{itemize}
 \section{SYSTEM DESCRIPTION AND PROBLEM STATEMENT }
 
+Figure \ref{Architecture} shows the framework of AAA. In the AAA mode, the SPS mode is used to collect the flow table entries of each group. All packets representing all the flows passing through the switch are copied to the unified group table entry to perform the actions defined by the group entry. When the controller controls the initialization of the group of entries, the action is initialized to point to the collector or discarded. Therefore, when the controller needs to control a switch to sample or stop sampling, it only needs to simply send a Group Mod message to the corresponding switch. When the action is Drop, the sampling is stopped. When it is directed to the exit of the collector, the sampling is started. . This not only makes use of the pure OpenFlow protocol, but also controls it more precisely based on the controller's global. Assuming that the sampling period is T, through the adaptive coordination algorithm of AAA, the sampling points are selected and the sampling duration is allocated for them, and the sampling order is determined and the strategy is decentralized to the corresponding switch to make them cooperate sampling.
 
-\section{System Model and Design}
-Figure \ref{Architecture} shows the general diagram of the AAA framework.
 
 \subsection{IMM  Model}
 
-We start with the four aspects of adaptability, agility, accuracy, efficiency, and synergy to abstract and model the problem. Build a AAA Co-Sampling Model. We abstract this problem with a new perspective, making the problem more intuitive and modeling the problem.
+Sampling in a large-scale network requires a maximum challenge to maximize the flow-level sampling accuracy and increase the sampling efficiency ratio while satisfying the low intrusion of the network and the maximum limit of the Collector (IDS eg) analysis capability. . Therefore, highly agile and adaptive algorithms are needed to set the sampling strategy based on the real-time conditions of the current network. When the network size is large, assuming that the number of switches is n, K (K <= n) nodes are generally selected for sampling, and K is determined according to actual conditions. In the sampling in each period T, if the capacity of the collector is C packets/T, then: Total Sampling Packet in T <= C. In the sampling process, under the premise of given C and K, the reasons that affect the sampling accuracy include the selection of sampling nodes and the allocation of sampling time for each node. Another reason why the sampling accuracy is affected should be the sampling ratio (sampled non-repetitive/total sampling). Repeated packet acquisition not only occupies limited sampling resources, but also limits the sampling accuracy. Reduce the efficiency of the upper application (IDS eg). The repetition rate is generated because multiple switching nodes cover the same stream and are collected at almost the same time. Each sampling node should have reasonable coordination and cooperation to reduce the repetition rate and improve the sampling accuracy.
 
-We believe that there is a cooperative relationship between the sampling between nodes. This relationship is multi-dimensional, which is reflected in the mutual constraint relationship between them, the coverage relationship of the current network, the static relationship in the topology, and so on.
 
-Fig. 1 shows our intuitive abstraction of the problem. For a sampling period T, the stream set F in the entire network is like an area depicted by a red outline, and for R1..Rn, each node is covered with 0 or more streams, which is recorded as a set $F_i^c$, as shown in the flow information matrix, is a shaded area in gray in Fig. 1. The red dotted area is the newly arrived stream that may be covered by the period Ri corresponding to the period Ri. The overlapping area between the gray areas is the overlapping part of the flow covered between the nodes, $F_i^c \bigcap F_j^c$. The overlapping portion between the red dotted areas is the overlapping portion of the newly arrived flow covered between the nodes. Some nodes contain both gray and red areas; while some nodes only contain red or gray areas, which represents the value of each node in the period. The larger the area covered, the more streams the node covers. Therefore, the Flow-Level sampling problem can be intuitively converted to an area coverage maximization problem. That is, under the given collector processing power and other constraints, the sampling time allocation of each node is realized, so that the coverage area is maximized (the maximum number of stream coverage).
+The most reasonable node selection and time allocation, the optimal co-sampling strategy to maximize the flow-level sampling accuracy. Therefore, we consider from these three perspectives to model the maximum flow-level sampling accuracy. First we propose an intuitive perspective based on maximizing area coverage to analyze the problem. Figure 2 shows this idea: In a sampling period T, the set of flows F in the entire network is like an area depicted by a solid red line. R1..Rn, each node is covered by 0 or more streams, the set $F_i^c$, which is a shaded area in gray in Fig. 2, which represents the value of the node for the coverage of the known stream in the whole network. recorded as dynamic value. The red dashed area, which is the newly arrived stream that node Ri may cover in T, represents the potential value of the node in T time: these streams arrive after the sampling strategy is decentralized and are therefore not perceived by the sampling algorithm . The overlapping area between the gray areas is the overlapping part of the flow covered between the nodes, $F_i^c \bigcap F_j^c$. The overlapping portion between the red dotted areas is the overlapping portion of the newly arrived flow covered between the nodes. Some nodes contain both gray and red areas, The greater the number of streams detected by the node, the greater the value of the node. Therefore, the Flow-Level sampling problem can be intuitively converted into an area coverage maximization problem. That is, under the given collector processing power and other constraints, the sampling time allocation of each node is realized, so that the coverage area is maximized (the maximum number of stream coverage).
 
-Under the definition of this problem, we propose a quantization model based on Slot partition time. Fig. 2 shows the way this model is used. First we divide the sampling period $T$ into $L$ equal length Slots; for each $Ri$, we need to determine its sampling Slot set $\widetilde S_i$. For any switch, the value it can generate in a Slot is expressed as $v_i$, which is visually represented as the number of streams sampled. For all nodes, the number and order of the Slots they are assigned to are calculated. The reason is that the number of Slots is positively correlated with the value generated by a node, and the more time is allocated to a node, The expected value of sampling to the stream is larger, and the order of the Slot of each node implicitly expresses the mutual constraint between the nodes: because the two nodes have overlapping flows, and when the coverage area is maximized, it should be removed. Multiple accumulations of overlapping areas between nodes in the same Slot. For the value $v_i$ produced by $R_i$, the quantization should take into account the expected number of known flows in a unit Slot time, and should also consider the number of new flows that may arrive within the period T, but For the unknown stream, even if we quantify the number of arrivals of a switch through the arrival distribution model of some flows, we cannot know the relationship between the unknown flows arriving between the nodes, and the paths and nodes of the unknown flow cannot be predicted. The relationship between the overlapping flows is so difficult to quantify the constraint relationship between the newly arrived flows to the nodes in the period $T$. However, for a node, its static Topology influence and short-term activity can be used to approximate its value in the period $T$. They represent one of the nodes in the week $T$ in the whole node. Influence, the greater the influence, the more likely it is to cover more flows. Moreover, these two attributes are private to the node, and there is no constraint relationship with other nodes. The number of known flows/the total number of streams covered by the nodes in the unit slot is the coverage of the current stream brought by the nodes in the unit time Slot, which we call the dynamic influence of the flow.
 
-We give the following optimization model, Maximize Influence (formula), which is a transformation based on the traffic coverage problem: convert the number of coverage of the stream into coverage to quantify the node in unit $t$ Dynamic influence within; use Si and Hi to quantify the influence of nodes within $T$. Therefore, in $t$ unit time, the influence of a certain node should be considered in total and we use weighted way to get the comprehensive influence value of the node.
-In the quantification of $D_i$, we assume that the arrival strength of the stream $f_i$ packet obeys the Poisson distribution with intensity $\lambda_i$.
+On the problem of maximizing area coverage, for the same stream, if there is temporal overlap in sampling on different nodes, the overlap should be subtracted when calculating the overall coverage area. However, the red region of each node is unknown to the sampling strategy. Even if the distribution model of the flow can be analyzed, the overlapping relationship of these unknown flows at each node cannot be known. Therefore the potential value of a node requires an independent (independent of other nodes) quantization. For a node, its intermediateity in the Topology [2] and the proportion of its historical flow can be used to evaluate the potential impact of the node, and these influences represent the potential value of the node, namely: potential impact The greater the force, the greater the value that the node may create in a unit of time. The value generated by the node during unit time t should be equal to the dynamic value $+$ potential value. Assume that the arrival of the packet of the stream $f_i$ obeys the Poisson distribution of $da$, so if any switch captures at least one packet of $f_i$, then the stream is considered to be successfully captured, $f_i$ The probability of being captured in unit time t is $P{N_p^k (t)>0}$. For $R_i$, if it is assigned a t, the dynamic value brought by the node (actually the number of expected to capture the known stream) is $  $, then its area coverage is $D_i/|F^c|$, the quantization method is based on an extended version of [2] The mediation center metric, which we call the dynamic impact of $R_i$ over the t-sampling duration. The OSPF-based mediation in Topology measures the influence of nodes in the topology. We use a standardized intermediate degree [2], and the influence of $R_i$ in the topology over the entire sampling period T is recorded as $S_i$. If the higher the $S_i$, the node is likely to go through more streams. If at some point in the network, the dynamic influence of $R_i$ is greater than $R_j$, that is, the current $R_i$ has more streams, but the dynamic impact of $R_j$ is higher than $R_i$, so in the following time, $R_j$ has a greater probability of going through more streams. The historical flow ratio of node $R_i$ reflects the activity of the node throughout the network life cycle. We call it the historical influence of $R_i$ over the entire sampling period T, denoted as $H_i $, $H_i = TF_i /TF$. The potential influence of $R_i$ in period T is the combination of $S_i$ and $H_i$. The combined influence of $R_i$ on the sampling time per unit time t can be quantified as $(t<=T)$, which is the weighted sum of aby.
+
+Therefore, we present the Impact Maximization Quantization Model (IMM) formula (1), which uses the influence maximization approach to maximize the sampling of the stream. Since the time is continuous, first let t be the unit time length, where $t<=T, let l = T/t$, which means that there are 1 unit Slot in the T period, and each slot is recorded as s1...sl. Where $^S_i$ represents the set of Slots allocated for $R_i$. When $|S|$ is larger, the comprehensive influence of the nodes is larger, but (3) gives the comprehensive influence of the nodes with Slot. The number of judgment conditions is increased. When $v_i*|^S| >|F^c_i|$ is: the node realizes full capture of the current stream passing through it, then more Slot allocation will not continue to enhance its dynamic influence, and will only continue to enhance the potential impact. force. Therefore, the combined influence of all nodes is summed, and the dynamic influence of the overlapping part of the whole system is subtracted to obtain the total influence of the system.
 
 
 
@@ -482,9 +480,7 @@ In the quantification of $D_i$, we assume that the arrival strength of the strea
 \end{split}
 \end{equation}
 subject to:
-\begin{equation}
-{v_i} = \sum\limits_{{f_k} \in {F^C}} {P\left\{ {N_p^k\left( t \right) > 0} \right\}}
-\end{equation}
+ 
 \begin{equation}
 \delta \left( {{v_i},\left| {\widetilde {{S_i}}} \right|} \right) = \left\{ \begin{array}{l}
 {v_i} \cdot \left| {\widetilde {{S_i}}} \right|,{\rm{    }}{v_i} \cdot \left| {\widetilde {{S_i}}} \right| < \left| {F_i^c} \right|\\
@@ -500,10 +496,7 @@ U = \left\{ {{R_i},{f_k} \in F_i^c \wedge {s^l} \in \widetilde {{S_i}}} \right\}
 {\rm{   }}0\quad \quad \; \; ,\, \left| U \right| = 0
 \end{array} \right.
 \end{equation}
-
-\begin{equation}
-\alpha  + \beta  + \gamma  = 1
-\end{equation}
+ 
 \begin{equation}
 \sum\nolimits_i^n {f(\widetilde {{S_i}}) \le } K,\quad f(\widetilde {{S_i}}) = \left\{ \begin{array}{l}
 1,\ \ \left| {\widetilde {{S_i}}} \right| \ge 1\\
@@ -516,19 +509,8 @@ U = \left\{ {{R_i},{f_k} \in F_i^c \wedge {s^l} \in \widetilde {{S_i}}} \right\}
 t,{s^l} \in \widetilde {{S_i}}
 \end{array} \right.
 \end{equation}
-\begin{equation}
-l \le {\raise0.7ex\hbox{$T$} \!\mathord{\left/
- {\vphantom {T t}}\right.\kern-\nulldelimiterspace}
-\!\lower0.7ex\hbox{$t$}},\forall {s^l} \wedge t \le T
-\end{equation}
-\begin{equation}
-K \le n,\forall {R_i}
-\end{equation}
-\begin{equation}
-\left| {\widetilde {{S_i}}} \right| \le {\raise0.7ex\hbox{$T$} \!\mathord{\left/
- {\vphantom {T t}}\right.\kern-\nulldelimiterspace}
-\!\lower0.7ex\hbox{$t$}},\forall i
-\end{equation}
+ 
+ 
 
 \begin{figure}[!!!!!!!!!!!!!!hhhhhhhhhht]
 \centering
@@ -554,35 +536,7 @@ For the model of maximizing impact problems, the coverage of known traffic, the 
 The model contains a number of sub-constrained sub-problems. We consider the complexity and feasibility while quantifying, and it is actually difficult to directly solve the solution to the problem. Therefore, we decompose the problem model into three sub-models: node selection, Slot number allocation, and Slot sequence arrangement. For each sub-problem, we model it independently and use an independent algorithm to solve the optimal solution or approximate optimal solution. In the end, the approximation of the problem can be effectively obtained.
 This problem is not only a variant of multiple backpacks, but also adds enough constraints on the issue of multiple backpacks. Asking to solve this problem is an NP-hard problem. Therefore, we break it down into three parts to approximate the problem.
 
-\begin{table}[h]
-\centering
-\caption{table}\label{tab:tab2}
-\begin{tabular}{c|c}
-\hline
-Nonation & Explanation\\
-\hline
-\hline
-M & the current flow information matrix \\
-\hline
-S & selected switches set \\
-\hline
-$sw_j$ & the $j$-th switch \\
-\hline
-$f_i$ & the $i$-th flow \\
-\hline
-$m_{ij}$ & the each value for $f_i$ and $sw_j$ in M,either 1 or 0 \\
-\hline
-$c_j$ & the betweenness centrality of $sw_j$  \\
-\hline
-$c_{max}$ & the max betweenness centrality of $sw_j$  \\
-\hline
-$I$ & the current number of flows  \\
-\hline
-$J$ & the current number of switches  \\
-\hline
-\hline
-\end{tabular}
-\end{table}
+
 
 \subsection{Sampling Point Selection} 
 
