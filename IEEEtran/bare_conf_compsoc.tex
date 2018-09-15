@@ -540,36 +540,18 @@ This problem is not only a variant of multiple backpacks, but also adds enough c
 
 
 \section{Optimal}
-In this section, we decompose the IMM into three sub-problems: K sampling point election, Slot time allocation, node cooperative sampling optimization, and corresponding three heuristic algorithms are proposed to form the approximate optimal solution of the IMM model.
-\subsection{Sampling Point Selection} 
+In this section, we decompose the IMM into three sub-problems: K sampling point Selection, Slot time allocation, node cooperative sampling optimization, and corresponding three heuristic algorithms are proposed to form the approximate optimal solution of the IMM model.
+\subsection{K Sampling Point Selection} 
+In the selection of K sampling points, we only focus how to use the static properties of the nodes to quantify their comprehensive influence, which is independent of time allocation. Therefore, we do not care about the effect of the number of slots in (1) on the comprehensive influence of the nodes (next section will show you how to make a reasonable allocation of slot number with selected points).The optimization model for this subproblem is equation (7), where $D_i=$.The $max{dsdada}$ part of equation (7) expresses that any flow will only have a direct influence value for one of all nodes, and its direct influence on other nodes will be subtracted.In other words, any flow is privatized by a node during sampling nodes selection.Therefore, it is possible to iteratively calculate the top $K$ nodes with the most comprehensive influence, the highest comprehensive influence in each round will be selected, and privatize all the flows it covers (but not including the flows privatized by other selected nodes in the previous selection);That is, for the direct influence value of the candidate $R_i$ in the $k$ round, the flow set included is $F^{cs}_i = F_i- \bigcup_{m=1}^{k-1}F_m^c$;If $R_i$ is selected in this round,  the flows in $F^{cs}_i$ is $R_i$ exclusive;In the $k+1$ round selection, even if the candidate nodes cover these flows, these flows have been privatized by the $R_i$, will not bring value to these candidate nodes in the $k+1$ round. The K-round selection is carried out, and the nodes with the highest comprehensive influence are selected in each round, so that the sum of the comprehensive influences of the K nodes is guaranteed to be maximized, so the K nodes are the optimal solutions.$D_i^k$ indicates the direct influence of the candidate node $R_i$ in the k-th round selection, which is calculated as equation (8). Equation (11) describes the iterative calculation formula for the comprehensive influence of the candidate nodes for each round of selection.Algorithm 1 gives the solution process, and Fig3 also shows the change process of direct influence in each round of elections.Finally, the K node set $R^s$ and the $F{cs}$ set corresponding to each node can be obtained.
 
-According to the definition of model (1), select the K most influential nodes as sampling nodes and assign Slots.
-In the optimization model (1), selecting the sampling node and assigning the number of Slots and determining the Slot order of each sampling node. The constraint between them is the overlapping problem of known flows between the nodes, so the three problems should be separated separately. First, the problem of overlapping of streams between nodes needs to be removed. We use the node influence power mode in model (1) to comprehensively quantify each node and select the top K influence maximization nodes through dynamic influence, static topological influence, and node historical influence. In the process of selecting the round (a total of K rounds), the high-impact nodes are used to privatize the overlapping flows to solve the overlapping problem of the flow. At this time, the dynamic influence force Di indicates the influence of the node based on the intermediate degree of the flow. Dik indicates the dynamic influence of node i when the kth node is selected during the Kth round selection. In the Kth round selection, if the i node has the greatest comprehensive influence, it will privatize all the flows it contains but Does not contain the stream contained in the nodes in the 1-k-1 round.
-Formula (15) gives a quantitative formula for the comprehensive influence.
-
-The principle of the algorithm will be stated next, with respect to the notations in Table I being used throughout the paper.
-
-Firstly, initialize the matrix M=[$m_{ij}$] and the betweenness centrality $c_j$. Fig.\ref{png_sampling_point.png}-a shows a subnet topology, where there are 6 switch nodes and 6 flows. And we define: if $f_i$ passes through $sw_j$, the $m_{ij}$=1, otherwise $m_{ij}$=0. After initialization,as Fig.\ref{png_sampling_point.png}-b shows,we get a $I \ast J$ two-dimension matrix. Then calculate $c_j$ and $c_{max}$.
-
-\begin{equation}
- c_{max} = \max\{ c_j \mid c_j=\sum_i{m_{ij}},i\in[1,I],j\in[1,J] \wedge  i,j\in Z\} 
-\end{equation}
 \begin{equation}
 D_{i}^{k}={\left| {{F}_{i}}-\bigcup\nolimits_{c}^{k-1}{\widetilde{{{F}_{c}}}} \right|}/{\left| F-\bigcup\nolimits_{c}^{k-1}{\widetilde{{{F}_{c}}}} \right|}\;
 \end{equation}
-\begin{equation}
-%{{H}_{i}}=\frac{T{{F}_{i}}}{TF}
-{{H}_{i}}={T{{F}_{i}}}/{TF}\;
-\end{equation}
-\begin{equation}
-%{{S}_{i}}=\frac{{{C}_{i}}}{\sum\nolimits_{i}^{n}{{{C}_{i}}}}
-{{S}_{i}}={{{C}_{i}}}/{\sum\nolimits_{i}^{n}{{{C}_{i}}}}\;
-\end{equation}
+ 
+
 \begin{equation}
 I_{i}^{k}=\alpha \cdot D_{i}^{k}+\beta \cdot {{S}_{i}}+\gamma \cdot {{H}_{i}}
 \end{equation}
-
-Senondly, elect the node with highest betweenness centrality as the sampling node and change $m_{ij}$ until each $m_{ij}$ = 0. As shown in Fig.\ref{png_sampling_point_in.png}, $c_{max}$ = $c_3$. Hence,the $sw_3$ is the first sampling node. Owing to $f_1$,$f_2$,$f_4$,$f_6$ pass through the $sw_3$, make $m_{ij}$ = 0($i$=1,2,4,6,$j \in [1,J]$). Then we can get a new marrix $M$ and calculate new $c_j$ and $c_{max}$ used for the next election. Repeating the above method, and electing the sampling node $sw_4$. Finally,we get $S$={$sw_3$,$sw_4$},when each $m_{ij}$=0.  
 
 \begin{algorithm}[h]
 \caption{Sampling Point Selection}
@@ -616,12 +598,7 @@ Senondly, elect the node with highest betweenness centrality as the sampling nod
 
 \subsection{Allocation of Time Slot}
 
-
-After the nodes are selected the number of slots needs to be allocated to these nodes. For $R_i$, the number of selected slots is not linearly related to the value. Equation (3) describes the relationship between them. The value function $\alpha \cdot \frac{\delta ({{v}_{i}},\left| \widetilde{{{S}_{i}}} \right|)}{\left| {{F}^{c}} \right|}+\frac{\left| \widetilde{{{S}_{i}}} \right|}{{T}/{t}\;}\cdot (\beta \cdot {{S}_{i}}+\gamma \cdot {{H}_{i}})$ increases as the number of Slots increases in $Mode(1)$. When the ELSE in equation (3) is satisfied, there will be another growth trend, which depends on its $S_i$ and $H_i$ value.The reason is that if a node captures 100\% of the flows it currently covers, more Slot allocations will not generate more value for the current flows capture, but only increase the potential flows capture.Therefore, this cannot use the multi-catch algorithm to solve the optimal solution. The problem can be solved separately in two parts, the first part is found in formula (3), when each node satisfies ELSE. In this case, the number of optional Slots for each node can be determined, and then the problem is converted into a multi-clip problem to solve the optimal solution for a total of K items to be selected (Rs1-Rsk), each type of candidate to be selected There are $N^l_i$, and the return of each item in one unit Slot is $v(R_i,t)$, the cost is $w(R_i,t)$, and the constraint is C. After the first part is solved, the remaining C, as the constraint of the second part, is still a multi-clip problem. At this time, the number of optional slots of each node is $\frac{T}{t} $ minus the first part. The number of nodes that have been assigned. Each part can get the optimal solution of each part. Solving the complexity of the problem $O(\frac{T}{t} \cdot |R^s| \cdot C)$ When T is too large or t is too small and C is too large, the time to solve is unacceptable. 
-
-We give a simpler and more efficient to achieve, combines the two processes into the same process, using simple influence from high to low polling distribution, so that The current high-impact node of preferentially allocates a Slot. When the node satisfies the ELSE part of the formula (3), the influence prioritization in the subsequent allocation process only uses $\frac{1}{{T}/{t}\;}\cdot (\beta \cdot {{S}_{i}}+\gamma \cdot {{H}_{i}})$, and the nodes that does not satisfy the formula (3) $ELSE$, Continue to use the comprehensive influence to sort. This algorithm is consistent with the formula definition in Model(1).
-
-For the current influence of a node under one unit slot $t$, a Slot is assigned from high to low, and each round is allocated, and the influence of each node is reordered (because some nodes will satisfy the ELSE condition of formula (3), and Causes a change in influence) until C = 0 or cannot be assigned.
+After the node is selected, the number of Slots needs to be allocated to these nodes when the constraint (10) is satisfied and the Slot sequence between nodes is not considered.For each sample node, each value is assigned to a certain value, we still use the comprehensive influence to quantify the value of the node.The optimization model of the sub-problem is the formula (8), and the direct influence judgment of the formula is still the formula (3).The optimization model of the subproblem is the formula (8), which is still judged by the formula (3).And use the flow set privatized by the node to calculate the direct influence of the node in the unit time t $D_i$, $D_i=\frac{\sum_{f_k \in F^{cs}_i} P\{N_p^k(t)> 0\}}{|F^c|} $.For the cost $w_i$ of the node in unit time t, the dynamic influence $D_i$ in equation (7) still uses $F_i^c$ to calculate not $F^{cs}_i$. This is because we only logically eliminate the overlapping flows between nodes, but there is still no change in the overall rate of the underlying nodes.In the sub-problem optimization model, the comprehensive influence of the nodes increases with the increase of the number of Slots. When the situation of ELSE in formula (3) is satisfied, another growth trend will be presented,and he trend depends on $S_i$ and $H_i$. We have described the reasons in the construction of the IMM model.That is to say, the value generated by a single Slot is related to the number of Slots, not independent, so it is not possible to solve the optimal solution with multiple backpacks.We give a simple and efficient allocation algorithm to achieve: the simple influence of the node's comprehensive influence per unit time t from high to low polling allocation, so that the current high-impact nodes preferentially allocate Slot;
 \begin{algorithm}[h]
 \caption{Impact Priority Polling Allocation Slots}
 \begin{algorithmic}[1]
