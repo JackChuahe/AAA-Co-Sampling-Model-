@@ -106,6 +106,7 @@
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{multirow}
+\usepackage{enumitem}
 \usepackage{amsmath,amssymb,amsfonts}
 \renewcommand{\algorithmicrequire}{ \textbf{Input:}} %Use Input in the format of Algorithm
 \renewcommand{\algorithmicensure}{ \textbf{Output:}} %UseOutput in the format of Algorithm
@@ -403,7 +404,7 @@ Tianjin University, Tianjin, China.
 % As a general rule, do not put math, special symbols or citations
 % in the abstract
 \begin{abstract}
-The abstract goes here.
+With the proliferation of Internet applications and the explosion of traffic, Fine-gaine's flow-level information acquisition provides basic support for network management, TE, security analysis, and Qos.In traffic sampling, due to the scale of the network, the analysis capcity of the Collector,and the highly random and dynamic network environment, there are a large number of uncapable flows. In this paper, we focus on maximizing the sampling accuracy, and proposing the Influence Maximization Model(IMM) from the three dimensions of sampling node selection, time allocation and collaboration between nodes.Based on the optimization model, we propose three heuristic algorithms to solve the approximate optimal solution. We implemented the AAA platform and evaluated the performance of the algorithms using real network topology. 
 \end{abstract}
 
 % no keywords
@@ -442,23 +443,24 @@ To solve the above problems, a agile, adaptive and cooperative sampling mechanis
 \end{figure}
 
 \section{Related Work}
-\begin{itemize}
+Our main contributions are summarized as follows:
+\begin{itemize}[leftmargin=*]
+\setlength{\parindent}{0pt}
 
-\item A detailed introduction to the background: Why build an application-aware network - the contrast between traditional and SDN networks. 
-\item Introducting the problems existing in building a large-scale application-aware network (a reasonable collection of traffic in a large-scale network environment is a basic problem in the field of traffic monitoring and traffic engineering). 
-\item And including the solutions already on the basic problem, and the various problems that exist.
-\item Introducting the Intermediary centrality algorithm.
-\item Outline the algorithms and strategies we use.
-
+\item In the context of Flow-level Sampling, we focus on maximizing the sampling accuracy. From the three dimensions of  node selection,sampling node cooperation and time allocation, the IMM impact maximization model is constructed. We first explained the effect of cooperative sampling between nodes and packet repetition rate on sampling accuracy.
+\item Based on the IMM optimization model, we split it into three sub-problems: sampling node election, Slot time allocation, and cooperation between nodes, and three heuristic algorithms are proposed to solve the approximate optimal solution of IMM.
+\item We built the AAA platform and evaluated the performance of the algorithms using a real large-scale WAN topology. Finally, an application identification demo is implemented: App-Awareness.
 \end{itemize}
+
 \section{SYSTEM DESCRIPTION AND PROBLEM STATEMENT }
 
-Figure \ref{Architecture} shows the framework of AAA. In the AAA mode, the SPS mode is used to collect the flow table entries of each group. All packets representing all the flows passing through the switch are copied to the unified group table entry to perform the actions defined by the group entry. When the controller controls the initialization of the group of entries, the action is initialized to point to the collector or discarded. Therefore, when the controller needs to control a switch to sample or stop sampling, it only needs to simply send a Group Mod message to the corresponding switch. When the action is Drop, the sampling is stopped. When it is directed to the exit of the collector, the sampling is started. . This not only makes use of the pure OpenFlow protocol, but also controls it more precisely based on the controller's global. Assuming that the sampling period is T, through the adaptive coordination algorithm of AAA, the sampling points are selected and the sampling duration is allocated for them, and the sampling order is determined and the strategy is decentralized to the corresponding switch to make them cooperate sampling.
+Figure \ref{Architecture} shows the framework of AAA. In the AAA mode, the SPS mode is used to collect the flow table entries of each group. All packets representing all the flows passing through the switch are copied to the unified group table entry to perform the actions defined by the group entry. When the controller controls the initialization of the group of entries, the action is initialized to point to the collector or discarded. Therefore, when the controller needs to control a switch to sample or stop sampling, it only needs to simply send a Group Mod message to the corresponding switch. When the action is Drop, the sampling is stopped. When it is directed to the exit of the collector, the sampling is started. . This not only makes use of the pure OpenFlow protocol, but also controls it more precisely based on the controller's global. Assuming that the sampling period is $T$, through the adaptive coordination algorithm of AAA, the sampling points are selected and the sampling duration is allocated for them, and the sampling order is determined and the strategy is decentralized to the corresponding switch to make them cooperate sampling.
 
-
+Sampling in large-scale networks, while satisfying the low intrusion of the network and the limitation of the Collector (IDS e.g) analysis capability, maximizing the sampling accuracy of the Flow-level and increasing the sampling efficiency ratio is a huge challenge.Therefore, highly agile and adaptive algorithms are needed to set the sampling strategy based on the real-time conditions of the current network. When the network size is large, assuming that the number of switches is $n$, $K(K<=n)$ nodes are generally selected for sampling, and $K$ is determined according to actual conditions.In each sampling period $T$, if the capacity of the collector is $C$ $packets/T$; Within $T$, the total number of sampling packets must be less than or equal to $C$.For flow-level sampling, under the given $C$ and $K$ constraints, the reasons for affecting the sampling accuracy include the selection of sampling nodes and the allocation of sampling time for each node.Another reason should be the sampling effective ratio (sampled number of non-repetitive packets/number of total sampling packets).The collection of repeated packets not only occupies a limited sampling resource, but also limits the sampling accuracy, and also reduces the effectiveness of the upper application (IDS e.g).The repeated packets is generated because multiple switching nodes cover same flows and are sampled at the same time. Therefore, \textit{each sampling node should consider the overlapping relationship of the flows, and have reasonable coordination in the respective sampling time schedules}, so that the overlapping time of the system can be as small as possible, thereby reducing the repetition rate and improving the sampling accuracy.
 \subsection{IMM  Model}
 
-Sampling in a large-scale network requires a maximum challenge to maximize the flow-level sampling accuracy and increase the sampling efficiency ratio while satisfying the low intrusion of the network and the maximum limit of the Collector (IDS eg) analysis capability. . Therefore, highly agile and adaptive algorithms are needed to set the sampling strategy based on the real-time conditions of the current network. When the network size is large, assuming that the number of switches is n, K (K <= n) nodes are generally selected for sampling, and K is determined according to actual conditions. In the sampling in each period T, if the capacity of the collector is C packets/T, then: Total Sampling Packet in T <= C. In the sampling process, under the premise of given C and K, the reasons that affect the sampling accuracy include the selection of sampling nodes and the allocation of sampling time for each node. Another reason why the sampling accuracy is affected should be the sampling ratio (sampled non-repetitive/total sampling). Repeated packet acquisition not only occupies limited sampling resources, but also limits the sampling accuracy. Reduce the efficiency of the upper application (IDS eg). The repetition rate is generated because multiple switching nodes cover the same stream and are collected at almost the same time. Each sampling node should have reasonable coordination and cooperation to reduce the repetition rate and improve the sampling accuracy.
+
+
 
 
 The most reasonable node selection and time allocation, the optimal co-sampling strategy to maximize the flow-level sampling accuracy. Therefore, we consider from these three perspectives to model the maximum flow-level sampling accuracy. First we propose an intuitive perspective based on maximizing area coverage to analyze the problem. Figure 2 shows this idea: In a sampling period T, the set of flows F in the entire network is like an area depicted by a solid red line. R1..Rn, each node is covered by 0 or more streams, the set $F_i^c$, which is a shaded area in gray in Fig. 2, which represents the value of the node for the coverage of the known stream in the whole network. recorded as dynamic value. The red dashed area, which is the newly arrived stream that node Ri may cover in T, represents the potential value of the node in T time: these streams arrive after the sampling strategy is decentralized and are therefore not perceived by the sampling algorithm . The overlapping area between the gray areas is the overlapping part of the flow covered between the nodes, $F_i^c \bigcap F_j^c$. The overlapping portion between the red dotted areas is the overlapping portion of the newly arrived flow covered between the nodes. Some nodes contain both gray and red areas, The greater the number of streams detected by the node, the greater the value of the node. Therefore, the Flow-Level sampling problem can be intuitively converted into an area coverage maximization problem. That is, under the given collector processing power and other constraints, the sampling time allocation of each node is realized, so that the coverage area is maximized (the maximum number of stream coverage).
@@ -537,7 +539,8 @@ The model contains a number of sub-constrained sub-problems. We consider the com
 This problem is not only a variant of multiple backpacks, but also adds enough constraints on the issue of multiple backpacks. Asking to solve this problem is an NP-hard problem. Therefore, we break it down into three parts to approximate the problem.
 
 
-
+\section{Optimal}
+In this section, we decompose the IMM into three sub-problems: K sampling point election, Slot time allocation, node cooperative sampling optimization, and corresponding three heuristic algorithms are proposed to form the approximate optimal solution of the IMM model.
 \subsection{Sampling Point Selection} 
 
 According to the definition of model (1), select the K most influential nodes as sampling nodes and assign Slots.
