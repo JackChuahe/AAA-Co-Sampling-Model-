@@ -460,15 +460,35 @@ In large-scale networks, maximizing the sampling accuracy of Flow-level is a hug
 
 \subsection{IMM  Model}
 In order to maximize the sampling accuracy of Flow-level, we build the model from three aspects: node selection, time allocation and cooperative strategy among nodes. We transform the maximum sampling accuracy problem to the maximum area coverage problem, as shown in Figure 2.In a sampling period T, the flow set F in the whole network is just like an area depicted by a red solid line, then the set $F_i^ C$ of the flow detected by node R1 is equivalent to the grey area, which is denoted as the direct value of the node.The red dotted area represents the potential value of the node, which is a new data flow that may be captured by the node in a T. These streams arrive only after the downward sampling strategy, so they are not perceived by the sampling algorithm.The overlap area of the grey area represents the same flow detected between the current nodes, as in $F_i ^ C \bigcap F_j ^ C$. The overlapping area of the red dotted line is the same new flow detected by each node.The sum of the direct value and the potential value represents the total value of nodes in a T. The larger the number of nodes detected, the greater the value of nodes. Therefore, the Flow-Level sampling problem can be directly converted to the area coverage maximization problem.If the sampling time of two nodes overlaps and $F^c_i \bigcap F^c_j!={}$, this is considered to be flow overlap, then the number of overlapping streams should be subtracted when calculating the overall coverage area, which reflects the cooperative nature of the sampling nodes.Therefore, in order to maximize the sampling accuracy of flow, the more flow overlap in the system, the smaller the sampling time between nodes overlap.However, the red area of nodes is unknown when sampling strategy is formulated. Even by analyzing the flow arrival distribution model, we can not know the number of overlapping flows in the future of each node. Therefore, the potential value of nodes needs a separate or personal quantization.
+\begin{figure}[!!!!!!!!!!!!!!hhhhhhhhhht]
+\centering
+\subfigure[area coverage]
+{\includegraphics[width=8cm]{images/area_coverage.png}
+\label{fig_1_area}
+}
+\caption{overview of model}
+\label{fig_1_model}
+\end{figure}
 
 We propose a quantitative approach based on influence, which transforms the direct value of nodes into direct influence and the potential value into potential influence. We evaluate the potential value of nodes from two dimensions:the power in a network[2] and the number of former flows.They all represent the potential influence of the node, which represents the potential value of the node, that is, the greater the potential influence, the greater the value that the node may create in a unit time.We used standardized mediation centrality [2] to measure the power of nodes in the network, and recorded the network impact of $R_i$within a T as $S_i$.If the direct impact of $R_i$is greater than $R_j$, but $S_j$is higher than $S_i$, then even if the current flow deteced by $R_i$is bigger, the probability of the data flow passing through $R_j$is greater later.The percentages of previous flows  reflects the activity of nodes throughout the network lifecycle, which we call historical influence. And we labeled the historical influence of $R_i$within a T as $H_i $, $H_i = TF_i/TF$.So the potential influence of $R_i$on periodic T is the combination of $S_i$ and $H_i$.
 
 Assuming that the arrival of packets of a flow $f_i$($i=1,2...,k$) obeys the Poisson distribution with ${\lambda_{i}}$. if any switch captures at least one packet from the same $f_i$, $f_i$ is considered to have been successfully captured. The probability of $f_i$ being captured in unit time $t$ is $P\{N_p^k (t) >0\}$.If you assign $t$ to the node $R_i$, the direct value of $R_i$ is $D_i= \sum\limits_{{{f}_{k}}\in {{F}^{c}}}{P\left\{ N_{p}^{k}\left( t \right)>0 \right\}}$.Therefore, the acquisition rate of $R_i$is $D_i/|F^c|$, which we call direct influence.The quantification of direct influence is based on the flow betweenness centrality. Overall, $R_i$ has a combined effect of $\alpha \cdot {{D}_{i}}+\beta \cdot {{S}_{i}}+\gamma \cdot {{H}_{i}}$ over a $t$, and $\alpha +\beta +\gamma  = 1$.
 
+
+
 We give the Maximum Impact Model (MIM) as (1). The goal of this model is to allocate the corresponding sampling time for each $R_i$ under the constraints of given $C$ and $K$, and to determine the sampling cooperation strategy among nodes, so as to maximize the influence of the system in the period $T$, and then maximize the flow-level sampling accuracy.Since time is continuous, let $t$ is the unit time, $t<=T$. And let $L = T/t$ represents the number of time slots ${{s}^{l}}($l=1,2...,L$)$ in the $T$.$\widetilde{{{S}_{i}}}$ represents the set of slots allocated to $R_i$.The larger the size $|\widetilde{{{S}_{i}}}|$ of slot set, the greater the combined influence of nodes.The relationship between the combined influence of nodes and $|\widetilde{{{S}_{i}}}|$ is given in (2). When $ D_i\cdot |\widetilde{{{S}_{i}}}|>|F^c_i|$, it means that nodes can capture all the flows currently detected.Then its direct impact will not continue to increase with the increase of $|\widetilde{{{S}_{i}}}|$, but the potential impact will continue to increase. In addition, when a flow is collected by different nodes in the same slot, the actual number of flow in the whole system does not increase.Therefore, when the direct force of all nodes is accumulated in the left part of equation (1), it may be calculated repeatedly.$U$ is a set of routers which are assigned the ${{s}^{l}}$ for detecing the $f_k$,as (3).When $|U|\ge 1$,the times $\psi ({{f}_{k}},{{s}^{l}})$ of $f_k$ counted repeatedly at ${{s}^{l}}$ is $|U|-1$(4).So the direct influence calculated repeatedly of whole network is ${\alpha \cdot P\{{{N}^{k}}(t)>0\}\cdot \psi ({{f}_{k}},{{s}^{l}})}/{{{F}^{c}}}\;$ via the $f_k$ at the ${{s}^{l}}$ ,in which $\alpha$ is a weight coefficient.In summary, the whole (1) represents the summation of the comprehensive influence of all nodes, and then subtracts the direct influence calculated repeatedly of all nodes to obtain the total influence of the system. Just like area coverage, the area of overlapping parts is calculated many times without increasing the actual area coverage.
 
 Formula (5) (6) describes the constraints that the MIM model should satisfy. The number of sampling nodes $f(\widetilde{{{S}_{i}}})<= K$, and the number of sampling packets $w_i \cdot |\widetilde{{{S}_{i}}}|<=C$ sampled in period $T$. In formula (6), $w_i$ is the price of $R_i$ in unit time $t$. If the current rate of $R_i$ is $w_i packets/T$, Formula (7) describes the calculation process of $w_i$, and $w_i*[(\beta \cdot {S_i}+ \gamma \cdot {H_i}/\alpha \cdot {D_i}]$ represents an estimate of the possible arrival rate of the node. The cost of the new flow that the nodes may arrive in the $T$ is not negligible. We use the ratio of influence to estimate the equal ratio.
 
+\begin{figure}[!!!!!!!!!!!!!!hhhhhhhhhht]
+\centering
+\subfigure[time slot allocation]
+{\includegraphics[width=8.5cm]{images/slot_num_order.png}
+\label{fig_1_slot}
+}
+\caption{overview of model}
+\label{fig_1_model}
+\end{figure}
 We explained the quantization process of the IMM model and illustrated it as $Fig.2$.The goal of the MIM model is to allocate reasonable $|\widetilde{{{S}_{i}}}|$ sets for all $R_i$under constraint conditions.As $Fig2$ shows, when the system gets the optimal solution of $S ^ 1. S ^ n $, it not only reflects the optimal node selection, the optimal time allocation, but also reflects the optimal slot order, which is determined by the cooperation strategy between nodes. At the same time, each node actually avoid overlapping on the same slot as much as possible, so that the effective ratio of the system is improved.
 
 
@@ -513,21 +533,7 @@ subject to:
  
  
 
-\begin{figure}[!!!!!!!!!!!!!!hhhhhhhhhht]
-\centering
-\subfigure[area coverage]
-{\includegraphics[width=8cm]{images/area_coverage.png}
-\label{fig_1_area}
-}
 
-\subfigure[time slot allocation]
-{\includegraphics[width=8.5cm]{images/slot_num_order.png}
-\label{fig_1_slot}
-}
- 
-\caption{overview of model}
-\label{fig_1_model}
-\end{figure}
 
 
 
@@ -585,14 +591,28 @@ I_{i}^{k}=\alpha \cdot D_{i}^{k}+\beta \cdot {{S}_{i}}+\gamma \cdot {{H}_{i}}
 
 \subsection{Allocation of Time Slot}
 
-After the node is selected, the number of Slots needs to be allocated to these nodes when the constraint (10) is satisfied and the Slot sequence between nodes is not considered.For each sample node, each value is assigned to a certain value, we still use the comprehensive influence to quantify the value of the node.The optimization model of the sub-problem is the formula (8), and the direct influence judgment of the formula is still the formula (3).The optimization model of the subproblem is the formula (8), which is still judged by the formula (3).And use the flow set privatized by the node to calculate the direct influence of the node in the unit time t $D_i$, $D_i=\frac{\sum_{f_k \in F^{cs}_i} P\{N_p^k(t)> 0\}}{|F^c|} $.For the cost $w_i$ of the node in unit time t, the dynamic influence $D_i$ in equation (7) still uses $F_i^c$ to calculate not $F^{cs}_i$. This is because we only logically eliminate the overlapping flows between nodes, but there is still no change in the overall rate of the underlying nodes.In the sub-problem optimization model, the comprehensive influence of the nodes increases with the increase of the number of Slots. When the situation of ELSE in formula (3) is satisfied, another growth trend will be presented,and he trend depends on $S_i$ and $H_i$. We have described the reasons in the construction of the IMM model.That is to say, the value generated by a single Slot is related to the number of Slots, not independent, so it is not possible to solve the optimal solution with multiple backpacks.We give a simple and efficient allocation algorithm to achieve: the simple influence of the node's comprehensive influence per unit time t from high to low polling allocation, so that the current high-influence nodes preferentially allocate Slot.After each round of allocation, if a node satisfies the ELSE condition of formula (3), the comprehensive influence of the node in unit time t is $\beta \cdot S_i + \cdot H_i$,which does not satisfy the formula ( 3) For ELSE condition, continue to use the comprehensive influence of the three weighted sums.The algorithm stops until $C = 0$ or $C$ cannot be allocated.Algorithm 2 gives a description of the process.The algorithm perceives the change in the comprehensive influence per t due to the change in the number of node slots.Each round guarantees that the current high-influenced nodes preferentially allocate slot, and the polling allocation method can also avoid the starvation of some low-influence nodes.
+After the node is selected, the number of Slots needs to be allocated to these nodes when the constraint (10) is satisfied and the Slot sequence between nodes is not considered.The optimization model of the subproblem is the (\ref{dasd}), which is still judged by the formula (3).The goal of the model is to maximize system value under the given $R^s$ and constraints (10). The reason why the model does not need to consider the influence of overlapping flows between nodes on the total influence of the system is that we use the privatized flows set of each node $F^{cs}$ to quantify the direct influence of each node,and arbitrarily $F^{cs}_i \bigcap F^{cs}_j = \varnothing$, so the direct influence in the node $R_i$ in unit time t is (\ref{newDI}).
+\begin{equation}
+{D}_i=\frac{\sum_{f_k \in F^{cs}_i} P\{N_p^k(t)> 0\}}{|F^c|} 
+\label{newDI}
+\end{equation}
+For the cost $w_i$ of the node in unit time t, still uses $F_i^c$ to calculate. This is because we only logically eliminate the overlapping flows between nodes, but there is still no change in the overall rate of the underlying nodes.$CNT[1..K]$ represents the number of slots for each node.
+\begin{equation}
+max [ \alpha \cdot \delta(D_i,CNT[i]) + \frac{CNT[i]}{L}(\beta \cdot S_i + \gamma \cdot H_i)  ]
+\label{dasd}
+\end{equation}
+In the sub-problem optimization model, the comprehensive influence of the nodes increases with the increase of the number of Slots. When the situation of ELSE in formula (3) is satisfied, another growth trend will be presented,and he trend depends on $S_i$ and $H_i$. We have described the reasons in the construction of the IMM model.That is to say, the value generated by a single Slot is related to the number of Slots, not independent, so it is not possible to solve the optimal solution with multiple backpacks.
+
+We give a simple and efficient allocation algorithm to achieve: the simple influence of the node's comprehensive influence per unit time t from high to low polling allocation, so that the current high-influence nodes preferentially allocate Slot.After each round of allocation, if a node satisfies the ELSE condition of formula (3), the comprehensive influence of the node in unit time t is $\beta \cdot S_i + \cdot H_i$,which does not satisfy the formula ( 3) For ELSE condition, continue to use the comprehensive influence of the three weighted sums.The algorithm stops until $C = 0$ or $C$ cannot be allocated.Algorithm 2 gives a description of the process.The algorithm perceives the change in the comprehensive influence per t due to the change in the number of node slots.Each round guarantees that the current high-influenced nodes preferentially allocate slot, and the polling allocation method can also avoid the starvation of some low-influence nodes. So, $CNT[1..K]$ can obtained.
+
+
 \begin{algorithm}[h]
 \caption{Impact Priority Polling Allocation Slots}
 \begin{algorithmic}[1]
 \STATE Define $CNT[1..K] = 0$;   $\widetilde{I}[1..K] = 0;$
 \WHILE{$C > 0$ OR $C$ is different from the last round } 
 \FOR{$each$ $R^s_i \in R^s$ }
-\IF{$R_i$ satisfy$ \delta \left( {{v_i},\left| CNT[i] \right|} \right) $  the $ELSE$ condition }
+\IF{$R_i$ satisfy$ \delta \left( {{D_i}, CNT[i] } \right) $  the $ELSE$ condition }
 \STATE  $ \widetilde{I}[i]  = \frac{1}{{T}/{t}\;}\cdot (\beta \cdot {{S}_{i}}+\gamma \cdot {{H}_{i}})$ 
 \ELSE 
 \STATE  $ \widetilde{I}[i]  = \alpha \cdot \frac{{{v}_{i}\cdot 1}}{\left| {{F}^{c}} \right|}+\frac{1}{{T}/{t}\;} \cdot (\beta \cdot {{S}_{i}}+\gamma \cdot {{H}_{i}})$
