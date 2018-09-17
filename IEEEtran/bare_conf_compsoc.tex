@@ -426,14 +426,11 @@ With the proliferation of Internet applications and the explosion of traffic, Fi
 
 \section{Introduction}
 
-With the data traffic and network scale rapidly increaing, there exists huge demand for scalable network management. Meanwhile, network monitoring and application awareness play a increasingly critical role in Quality of Service(Qos),Traffic Engineering(TE) and cyber security.
-Briefly, application awareness is a basic technology to enhance  automation and intelligence of the network. It is divided into two processes: packet acquisition and traffic identification. Packet acquisition refers to capturing packets from switches through a mechanism or an algorithm. Traffic identification refers to parsing the five-tuple information of packets from different layer according to OSI model ,then  recognizing the application layer protocol with the help of DPI tools. Application-aware network can improve the visibility of itself , promote integration of different business and eliminate  faults quickly .However, the application awareness need integrate the high precision,high efficiency with real time, which is still a challange owing to the volume and variety of data in the large-scale network.
+With the data traffic and network scale rapidly increaing, there exists huge demand for scalable network management. Flow-based measuresment is crucial to the network management. Accutate,timely and efficient flow-level statistics collection can provide assistance for security analysis,traffic engineering and intelligent routing. 
 
-Software-defined network (SDN) is a new technical architecture which decouple the network control plane from the data-forwarding plane. It advocates building an open and programmable network to provide flexible, central controlled(or centralized) and globally visible network services, through which SDN can facilitate the operation and maintenance of the data center(DC) network. In a software-defined network, packet acquisition depends on OpenFlow(OF) protocol,which is varied from the Netflow and Sflow used in traditional networks.
-
-Based on port, payload, and traffic behavior characteristics, DPI can identify a variety of  information including the application layer protocol of a data flow, and be applied in application-aware network. In traditional networks, DPI devices are bound to the data plane, which makes it impossible to visualize global fine-grained traffic in real time. Therefore,many people are concerned about the research and optimization of the combination of SDN and application awareness. However, most of the current solutions are to deploy DPI in the SDN controller.In this case, parsing each single packet will be  computationally heavy for controller. In addition, network scale, number of sampling nodes, sampling frequency and repetition rate of packet all increase performance consumption of controllers.On the other hand, in order to improve the accuracy of application recognition, the system must be able to capture continuous  packets of the same flow regarding to the characteristics of DPI.
 To solve the above problems, a agile, adaptive and cooperative sampling mechanism which can be applied to large-scale data center network is urgently needed. 
 
+In this paper, we concentrate on how to address the above limitation and to achieve accurate and timely flow detection in the maximal value without modification to existing physical facility and extra burden to data center networks
 
 \begin{figure}[!hhhhhhhhhht]
 \centering
@@ -535,35 +532,39 @@ subject to:
 
 
 
-
-
-
 \section{Optimal}
-In this section, we decompose the IMM into three sub-problems: K sampling point Selection, Slot time allocation, node cooperative sampling optimization, and corresponding three heuristic algorithms are proposed to form the approximate optimal solution of the IMM model.
-\subsection{$K$ Sampling Point Selection} 
-In the selection of K sampling points, we only focus how to use the static properties of the nodes to quantify their comprehensive influence, which is independent of time allocation. The goal of the optimization model is to select K sampling nodes without considering the influence of time on the comprehensive influence of the nodes, so as to maximize the comprehensive influence of the system.The optimization model for this subproblem is (7), where $D_i=|F^c_i|/|F^c|$,and $\varphi(i)$ is 0 means that $R_i$ is not selected, 1 means $R_i$ is selected; $\widehat{U} = \{R_i,f_k \in F^c_i \wedge \varphi(i) = 1\}$ indicates how many selected nodes cover $f_k$.Similar to the IMM model, the former part sums the comprehensive influence of the selected nodes, and the latter part subtracts the influence part of the repeated calculations.The subtracted part expresses that any flow will only be calculated once as a direct influence,in other words, any flow will only be calculated as direct influence by only one of the selected nodes, the flow is privatized by a selected node during the selection process.Therefore, it is possible to iteratively calculate the top $K$ nodes with the most comprehensive influence, the highest comprehensive influence in each round will be selected, and privatize all the flows it covers (but not including the flows privatized by other selected nodes in the previous);That is, for the direct influence of the candidate $R_i$ in the $k$ round, use the flow set $\widetilde{F}^{cs}_i$ to calculate the direct influence, where $\widetilde{F}^{cs}_i = F_i^c- \bigcup_{m=1}^{k-1}F_m^{cs}$,and the subtracted portion indicates that it has been privatized by the selected node of the previous k-1 round;If $R_i$ is selected in this round,  the flows in $\widetilde{F}^{cs}_i$ is $R_i$ exclusive,then $\widetilde{F}^{cs}_i$ written as $F^{cs}_k$,$R_i$ is written as $R^s_k$; In the $k+1$ round selection, even if the other candidate nodes cover these flows, these flows have been privatized by the $R_i$, will not bring value to these candidate nodes in the $k+1$ round. The K-round selection is carried out, and the nodes with the highest comprehensive influence are selected in each round, so that the sum of the comprehensive influences of the K nodes is guaranteed to be maximized, so the K nodes are the optimal solutions.$D_i^k$ indicates the direct influence of the candidate node $R_i$ in the $k-th$ round selection, which $D_i^k = {\left| {{F}_{i}}-\bigcup\nolimits_{c}^{k-1}{\widetilde{{{F}_{c}}}} \right|}/{\left| F-\bigcup\nolimits_{c}^{k-1}{\widetilde{{{F}_{c}}}} \right|}$. Equation (11) describes the iterative calculation formula for the comprehensive influence of the candidate nodes for each round of selection.Algorithm 1 gives the solution process, and Fig3 also shows the change process of direct influence in each round of elections.Finally, the K node set $R^s$ and the $F^{cs}$ set corresponding to each node can be obtained.
+Since the above model is complicated, we divide it into three sub-problems: K node selection, Slot allocation, and collaborative sampling optimization. The solution to each sub-question will be the input to the next sub-question. Through three steps, the approximate optimal solution of the total problem is obtained.In this section, we detail each sub-question and propose the corresponding algorithms.
+\subsection{Iterative comprehensive influence-based $Top-K$ node selection based on flow privatization} 
+In the selection of K sampling points, we only focus how to use the static properties of the nodes to quantify their comprehensive influence, which is independent of time allocation. In (1), when the number of Slots and the cooperative relationship between nodes (Slots order) are not considered, the optimization formula can be expressed as (\ref{maxk}) and the constraint is (\ref{maxkc});The goal of the optimization model \ref{maxk} is to select K sampling nodes without considering the influence of time on the comprehensive influence of the nodes, so as to maximize the comprehensive influence of the system.Similar to the IMM model, the former part sums the comprehensive influence of the selected nodes, and the latter part subtracts the influence part of the repeated calculations.
 \begin{equation}
-max [\sum_{i=1}^n (\alpha \cdot {D_{i}} + \beta \cdot {S_{i}} + \gamma \cdot {H_{i}}) \cdot \varphi{(i)} - \alpha \cdot\sum_{f_k \in F^c} \widehat{\psi}{(f_k,i)}]
+\max [\sum_{i=1}^n (\alpha \cdot {D_{i}} + \beta \cdot {S_{i}} + \gamma \cdot {H_{i}}) \cdot \varphi{(i)} - \alpha \cdot\sum_{f_k \in F^c} \widehat{\psi}{(f_k)}]
+\label{maxk}
 \end{equation}
 \begin{equation}
-subject:\sum_{i=1}^{n} \varphi(i) = K
+subject to:\sum_{i=1}^{n} \varphi(i) = K
+\label{maxkc}
 \end{equation}
-
+In(\ref{maxk}), $D_i=|F^c_i|/|F^c|$,and $\varphi(i)$ is 0 means that $R_i$ is not selected, 1 means $R_i$ is selected;$\widehat{U} = \{R_i,f_k \in F^c_i \wedge \varphi(i) = 1\}$ indicates how many selected nodes cover $f_k$,so the(\ref{maxkr}) indicates how many selected nodes are repeatedly calculated $f_k$ as their direct influence.Therefore, the subtracted part expresses that any flow will only be calculated once as a direct influence,in other words, any flow will only be calculated as direct influence by only one of the selected nodes, the flow is privatized by a selected node during the selection process.
 \begin{equation}
-\widehat{\psi} \left( {{f_k},{s^l}} \right) = \left\{ \begin{array}{l}
+\widehat{\psi} \left( {{f_k}} \right) = \left\{ \begin{array}{l}
 \left| \widehat{U} \right| - 1,{\rm{    }}\left| \widehat{U} \right| \ge 1\\
 {\rm{   }}0\quad \quad \; \; ,\, \left| \widehat{U} \right| = 0
 \end{array} \right.
+\label{maxkr}
 \end{equation}
+Therefore, it is possible to iteratively calculate the top $K$ nodes with the most comprehensive influence, the highest comprehensive influence in each round will be selected, and privatize all the flows it covers (but not including the flows privatized by other selected nodes in the previous);That is, for the direct influence of the candidate $R_i$ in the $k$ round, use the flow set $\widetilde{F}^{cs}_i$ to calculate the direct influence; Let $F_k^{cs}$ denote the set of flows privatized by the selected node in the $k_{th}$ round, so $\widetilde{F}^{cs}_i = F_i^c- \bigcup_{m=1}^{k-1}F_m^{cs}$,and the subtracted portion indicates that it has been privatized by the selected node of the previous k-1 round;If $R_i$ is selected in this round, the flows in $\widetilde{F}^{cs}_i$ is $R_i$ exclusive,then $\widetilde{F}^{cs}_i$ written as $F^{cs}_k$,$R_i$ is written as $R^s_k$; In the $k+1$ round selection, even if the other candidate nodes cover these flows, these flows have been privatized by the $R_i$, will not bring value to these candidate nodes in the $k+1$ round. The K-round selection is carried out, and the nodes with the highest comprehensive influence are selected in each round,through the process of privatizing the flows with the most influential nodes in each round, any two selected nodes are: $F^{cs}_i \bigcap F^{cs}_j = \varnothing$, and the comprehensive influence of each node is the highest in the corresponding round, so the K selected nodes guarantee (\ref{maxk}) to be maximized under the constraint (\ref{maxkc}). so the $K$ nodes are the optimal solutions.$D_i^k$ indicates the direct influence of the candidate node $R_i$ in the $k-th$ round selection, which $D_i^k = |\widetilde{F}^{cs}_i|/{\left| F^c \right|}$. (\ref{maxki}) describes the iterative calculation formula for the comprehensive influence of the candidate nodes for each round of selection.
 \begin{equation}
 I_{i}^{k}=\alpha \cdot D_{i}^{k}+\beta \cdot {{S}_{i}}+\gamma \cdot {{H}_{i}}
+\label{maxki}
 \end{equation}
+Algorithm 1 gives the solution process, and Fig3 also shows the change process of direct influence in each round of elections.Finally, the K node set $R^s$ and the $F^{cs}$ set corresponding to each node can be obtained.The time complexity of the algorithm is $O(K*|R|)$.
+
 
 \begin{algorithm}[h]
 \caption{Sampling Point Selection}
 \begin{algorithmic}[1]
 
-\STATE define $R^s=\{\}$  //  The Set of Selected Routers
+\STATE define $R^s=\varnothing$  //  The Set of Selected Routers
 
 \FOR{$k=1$; $k < K$; $k++$ }
 
@@ -586,10 +587,7 @@ I_{i}^{k}=\alpha \cdot D_{i}^{k}+\beta \cdot {{S}_{i}}+\gamma \cdot {{H}_{i}}
  
 
 
-
-
-
-\subsection{Allocation of Time Slot}
+\subsection{Non-starved influence change-aware priority polling slot allocation}
 
 After the node is selected, the number of Slots needs to be allocated to these nodes when the constraint (10) is satisfied and the Slot sequence between nodes is not considered.The optimization model of the subproblem is the (\ref{dasd}), which is still judged by the formula (3).The goal of the model is to maximize system value under the given $R^s$ and constraints (10). The reason why the model does not need to consider the influence of overlapping flows between nodes on the total influence of the system is that we use the privatized flows set of each node $F^{cs}$ to quantify the direct influence of each node,and arbitrarily $F^{cs}_i \bigcap F^{cs}_j = \varnothing$, so the direct influence in the node $R_i$ in unit time t is (\ref{newDI}).
 \begin{equation}
@@ -598,12 +596,12 @@ After the node is selected, the number of Slots needs to be allocated to these n
 \end{equation}
 For the cost $w_i$ of the node in unit time t, still uses $F_i^c$ to calculate. This is because we only logically eliminate the overlapping flows between nodes, but there is still no change in the overall rate of the underlying nodes.$CNT[1..K]$ represents the number of slots for each node.
 \begin{equation}
-max [ \alpha \cdot \delta(D_i,CNT[i]) + \frac{CNT[i]}{L}(\beta \cdot S_i + \gamma \cdot H_i)  ]
+\max [ \alpha \cdot \delta(D_i,CNT[i]) + \frac{CNT[i]}{L}(\beta \cdot S_i + \gamma \cdot H_i)  ]
 \label{dasd}
 \end{equation}
 In the sub-problem optimization model, the comprehensive influence of the nodes increases with the increase of the number of Slots. When the situation of ELSE in formula (3) is satisfied, another growth trend will be presented,and he trend depends on $S_i$ and $H_i$. We have described the reasons in the construction of the IMM model.That is to say, the value generated by a single Slot is related to the number of Slots, not independent, so it is not possible to solve the optimal solution with multiple backpacks.
 
-We give a simple and efficient allocation algorithm to achieve: the simple influence of the node's comprehensive influence per unit time t from high to low polling allocation, so that the current high-influence nodes preferentially allocate Slot.After each round of allocation, if a node satisfies the ELSE condition of formula (3), the comprehensive influence of the node in unit time t is $\beta \cdot S_i + \cdot H_i$,which does not satisfy the formula ( 3) For ELSE condition, continue to use the comprehensive influence of the three weighted sums.The algorithm stops until $C = 0$ or $C$ cannot be allocated.Algorithm 2 gives a description of the process.The algorithm perceives the change in the comprehensive influence per t due to the change in the number of node slots.Each round guarantees that the current high-influenced nodes preferentially allocate slot, and the polling allocation method can also avoid the starvation of some low-influence nodes. So, $CNT[1..K]$ can obtained.
+We give a simple and efficient allocation algorithm to achieve: the simple influence of the node's comprehensive influence per unit time t from high to low polling allocation, so that the current high-influence nodes preferentially allocate Slot.After each round of allocation, if a node satisfies the ELSE condition of formula (3), the comprehensive influence of the node in unit time t is $\beta \cdot S_i + \cdot H_i$,which does not satisfy the formula ( 3) For ELSE condition, continue to use the comprehensive influence of the three weighted sums.The algorithm stops until $C = 0$ or $C$ cannot be allocated.Algorithm 2 gives a description of the process.The algorithm perceives the change in the comprehensive influence per t due to the change in the number of node slots.Each round guarantees that the current high-influenced nodes preferentially allocate slot, and the polling allocation method can also avoid the starvation of some low-influence nodes. $CNT[1..K]$ can be obtained.The time complexity of the algorithm is $O(\frac{C}{Min\{w_i\}})$.
 
 
 \begin{algorithm}[h]
@@ -626,19 +624,18 @@ We give a simple and efficient allocation algorithm to achieve: the simple influ
 \ENDIF
 \ENDFOR
 \ENDWHILE
-\RETURN $CNT$
+\RETURN $CNT[1..K]$
 \label{code:recentEnd}
 \end{algorithmic}
 \end{algorithm}
 
 
-\subsection{Order of Time Slot}
-In the IMM model, we describe the effect of cooperative sampling between nodes on sampling accuracy and the effective ratio of sampling. As shown in Fig. (3), the cooperation between nodes is reflected in the order of sampling Slots of each node.For this sub-problem, formula (9) is its optimization model. The optimization goal of the model is to minimize the number of resampled flows under given the number of Slots of each node.For any two sampling points $R_i, R_j$, assuming that $S_i, S_j$ are their Slot sets respectively, then $|S_i \bigcap S_j|$ indicates the number of times they are sampled under the same Slot;$|F_i^c \bigcap F_j^c|$ indicates the number of flows that thet cover the same.Therefore, the number of flows that are resampled between two nodes can be expressed as: $|S_i \bigcap S_j| \cdot |F_i^c \bigcap F_j^c|$.How to reasonably arrange the sampling time slot sequence of each node in the period T, so that the number of resampled flows of the whole system is minimized, thereby ensuring the minimum sampling packet repetition rate, so that the effectiveness of the whole sampling system is maximized.
+\subsection{Co-Sampling slots ordering based on effectiveness maximizing greed}
+In the IMM model, we have described the effect of cooperative sampling between nodes on sampling accuracy and the effective ratio of sampling. As shown in Fig. (3), the cooperation between nodes is reflected in the order of sampling Slots of each node.Two nodes covering same flows should be avoided sampling in the same slot.They should be arranged with the appropriate sampling order and cooperate with each other to maximize the effectiveness of the entire sampling system during period T.For this sub-problem, formula (9) is its optimization model. The optimization goal of the model is to minimize the number of resampled flows under given the number of Slots of each node.For any two sampling points $R_i, R_j$, assuming that $S_i, S_j$ are their Slot sets respectively, then $|S_i \bigcap S_j|$ indicates the number of times they are sampled under the same Slot;$|F_i^c \bigcap F_j^c|$ indicates the number of flows that thet cover the same.Therefore, the number of flows that are resampled between two nodes can be expressed as: $|S_i \bigcap S_j| \cdot |F_i^c \bigcap F_j^c|$.How to reasonably arrange the sampling time slot sequence of each node in the period T, so that the number of resampled flows of the whole system is minimized, thereby ensuring the minimum sampling packet repetition rate, so that the effectiveness of the whole sampling system is maximized.
 \begin{equation}
-\min \sum{(\left| \widetilde{{{S}_{i}}}\bigcap \widetilde{{{S}_{j}}} \right|}\cdot \left| \widetilde{{{F}_{i}}}\bigcap \widetilde{{{F}_{j}}} \right|),\forall i,j\wedge i\ne j
+\min \sum{(\left| \widetilde{{{S}_{i}}}\bigcap \widetilde{{{S}_{j}}} \right|}\cdot \left| \widetilde{{{F}_{i}}}\bigcap \widetilde{{{F}_{j}}} \right|),\forall i,j\wedge j>i
 \end{equation}
-
-This problem can be solved by using the search backtracking method, but it is a problem that cannot be solved in a polynomial time. Therefore, we consider a simple greedy algorithm to solve the approximate optimal solution of the problem.Algorithm 3 gives a description of the process.The $CNT$ array has been calculated in the previous section, indicating the number of slots for each node.At the beginning of the algorithm, initialize the $M^{slot}$ two-dimensional array to store the placement relationship between $R_i$ and $s^l$: $M^slot[i][l] = 1$, which represents $R_i$ node is sampled at $s^l$.In each round, an idle slot is selected for all nodes of $i, CNT[i]!=0$, and the selected slot makes the number of resampled flows of the whole system the least compared to other optional slots.Through each round, the nodes greedily chooses a slot that minimizes the current the number of resampled flows of the entire system, when $i, CNT[0]=0$, the slots order of each node is selected, an approximate optimal solution is obtained.Fig.6 demonstrates the process. In the example, the approximate solution we solved by this algorithm is 6 and the optimal solution is 5.
+This problem can be solved by using the search backtracking method, but it is a problem that cannot be solved in a polynomial time. Therefore, we consider a simple greedy algorithm to solve the approximate optimal solution of the problem.Algorithm 3 gives a description of the process.The $CNT$ array has been calculated in the previous section, indicating the number of slots for each node.At the beginning of the algorithm, initialize the $M^{slot}$ two-dimensional array to store the placement relationship between $R_i$ and $s^l$: $M^{slot}[i][l]=1$, which represents $R_i$ node sampling at $s^l$.In each round, an idle slot is selected for all nodes of $\forall i, CNT[i]\neq 0$, and the selected slot makes the number of resampled flows of the whole system the least compared to other optional slots.Through each round, the nodes greedily chooses a slot that minimizes the current the number of resampled flows of the entire system, when $i, CNT[0]=0$, the slots order of each node are selected, an approximate optimal solution is obtained.The time complexity of the algorithm is $O(L^2 \cdot K)$.Fig.6 demonstrates the process.In the example, the approximate solution we solved by this algorithm is 6 and the optimal solution is 5.
 \begin{algorithm}[h]
 \caption{Order of Time Slot Based on Greedy}
 \begin{algorithmic}[1]
